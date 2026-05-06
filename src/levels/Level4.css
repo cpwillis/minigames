@@ -1,0 +1,60 @@
+.level4 .hint {
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 5rem);
+  gap: 0.65rem;
+}
+
+.card {
+  width: 5rem;
+  height: 5rem;
+  cursor: pointer;
+  perspective: 600px;
+}
+
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.35s ease;
+}
+
+.card.face-up .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  backface-visibility: hidden;
+}
+
+.card-back {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  font-size: 1.25rem;
+  color: var(--muted);
+}
+
+.card-front {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 1.75rem;
+  transform: rotateY(180deg);
+}
+
+.card.matched .card-front {
+  border-color: var(--accent-dim);
+  background: #0f2a1a;
+}
