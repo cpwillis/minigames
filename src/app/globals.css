@@ -1,0 +1,46 @@
+@import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --game-preview-bg: #bbf7d0;
+    --game-found-bg: #fef3c7;
+    --game-invalid-bg: #fee2e2;
+    --game-correct-bg: #dcfce7;
+    --game-wrong-bg: #fee2e2;
+    --game-matched-bg: #dcfce7;
+  }
+  .dark {
+    --game-preview-bg: #1a3a27;
+    --game-found-bg: #3a2e0a;
+    --game-invalid-bg: #3a1010;
+    --game-correct-bg: #0f2a1a;
+    --game-wrong-bg: #2a0f0f;
+    --game-matched-bg: #0f2a1a;
+  }
+
+  * {
+    box-sizing: border-box;
+    border-color: theme(colors.gray.200);
+  }
+  .dark * {
+    border-color: theme(colors.gray.800);
+  }
+
+  html {
+    font-family: var(--font-sans);
+  }
+
+  body {
+    @apply bg-white text-gray-900;
+    @apply dark:bg-gray-950 dark:text-gray-100;
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  button {
+    cursor: pointer;
+  }
+}

@@ -1,0 +1,80 @@
+.ws-layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  overflow-x: auto;
+}
+
+.ws-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 2rem);
+  gap: 2px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.ws-cell {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background 0.08s;
+  letter-spacing: 0;
+}
+
+.ws-cell.anchor {
+  background: rgb(22 163 74 / 0.5);
+  color: rgb(21 128 61);
+}
+.dark .ws-cell.anchor {
+  background: rgb(21 128 61 / 0.6);
+  color: #4ade80;
+}
+
+.ws-cell.preview {
+  background: var(--game-preview-bg);
+  color: rgb(21 128 61);
+}
+.dark .ws-cell.preview {
+  color: #4ade80;
+}
+
+.ws-cell.found {
+  background: var(--game-found-bg);
+  color: rgb(161 98 7);
+}
+.dark .ws-cell.found {
+  color: #fbbf24;
+}
+
+.ws-cell.invalid {
+  background: var(--game-invalid-bg);
+  color: rgb(185 28 28);
+}
+.dark .ws-cell.invalid {
+  color: #ef4444;
+}
+
+.ws-word-list {
+  list-style: none;
+  min-width: 130px;
+  padding: 0;
+  margin: 0;
+}
+
+.ws-word {
+  font-size: 0.82rem;
+  padding: 0.2rem 0;
+  transition: color 0.2s;
+  letter-spacing: 0.5px;
+}
+
+.ws-word.found-word {
+  text-decoration: line-through;
+  opacity: 0.5;
+}

@@ -1,0 +1,13 @@
+name = "minigames-api"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+workers_dev = false
+
+[[routes]]
+pattern = "api.minigames.cpwillis.dev/*"
+zone_name = "cpwillis.dev"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "minigames-db"
+database_id = "REPLACE_WITH_DATABASE_ID"

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://minigames.cpwillis.dev/</loc><priority>1.0</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://minigames.cpwillis.dev/leaderboard</loc><priority>0.8</priority><changefreq>daily</changefreq></url>
+  <url><loc>https://minigames.cpwillis.dev/settings</loc><priority>0.3</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://minigames.cpwillis.dev/word-search</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://minigames.cpwillis.dev/caesar-cipher</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://minigames.cpwillis.dev/code-trivia</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://minigames.cpwillis.dev/memory-match</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://minigames.cpwillis.dev/riddle-box</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://minigames.cpwillis.dev/number-guess</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://minigames.cpwillis.dev/hangman</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://minigames.cpwillis.dev/http-status</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://minigames.cpwillis.dev/bug-finder</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://minigames.cpwillis.dev/typing-speed</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://minigames.cpwillis.dev/regex-match</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://minigames.cpwillis.dev/color-hex</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://minigames.cpwillis.dev/json-fix</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://minigames.cpwillis.dev/git-scenario</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://minigames.cpwillis.dev/big-o</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+</urlset>

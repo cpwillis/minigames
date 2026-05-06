@@ -1,16 +1,72 @@
-# React + Vite
+# minigames
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Browser-based developer mini games. 15 games covering CS concepts, typing, memory, git, regex, and more. Hosted at [minigames.cpwillis.dev](https://minigames.cpwillis.dev).
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Next.js 15** — App Router, TypeScript, static export (`output: 'export'`)
+- **Tailwind CSS v4** — utility styling
+- **next-themes** — flash-free light/dark/system toggle
+- **Cloudflare Pages** — hosts the static `out/` build
+- **Cloudflare Workers + Hono + D1** — optional API for the shared leaderboard
 
-## React Compiler
+## Running locally
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+cp .env.example .env.local   # optional: needed for leaderboard API
+npm run dev
+```
 
-## Expanding the ESLint configuration
+Games are fully playable without the API. Progress is stored in localStorage.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Environment variables
+
+| Variable | Purpose |
+|---|---|
+| `NEXT_PUBLIC_SITE_URL` | Canonical URL, used in metadata |
+| `NEXT_PUBLIC_API_URL` | Workers API base URL |
+| `NEXT_PUBLIC_GITHUB_URL` | GitHub repo link shown in footer |
+
+## Deploying
+
+### 1. Cloudflare Pages (frontend)
+
+1. Push to GitHub and connect the repo in Cloudflare Pages.
+2. Build settings: command `npm run build`, output directory `out`.
+3. Add env vars (Production): `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_GITHUB_URL`.
+4. Custom domain: `minigames.cpwillis.dev`.
+5. Disable preview deployments: Settings → Builds & deployments → branch controls → main only.
+
+### 2. Cloudflare D1 (database)
+
+```bash
+cd api
+npm install
+npm run db:create          # copy the database_id into api/wrangler.toml
+npm run db:migrate         # applies schema.sql
+```
+
+### 3. Cloudflare Workers (API)
+
+```bash
+cd api
+# edit api/wrangler.toml: replace REPLACE_WITH_DATABASE_ID
+wrangler deploy
+```
+
+Add a Cloudflare DNS CNAME: name `api`, target `<your-worker>.workers.dev`, proxied.
+
+### 4. Google Search Console
+
+1. Add property `https://minigames.cpwillis.dev` (URL prefix method).
+2. Verify via HTML tag — copy the code into `src/app/layout.tsx` metadata: `verification: { google: 'YOUR_CODE' }`.
+3. Submit sitemap: `https://minigames.cpwillis.dev/sitemap.xml`.
+
+## Adding a game
+
+See [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md).
+
+## License
+
+MIT

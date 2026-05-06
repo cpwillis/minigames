@@ -1,0 +1,48 @@
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 5rem);
+  gap: 0.65rem;
+}
+
+.card {
+  width: 5rem;
+  height: 5rem;
+  cursor: pointer;
+  perspective: 600px;
+}
+
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.35s ease;
+}
+
+.card.face-up .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  backface-visibility: hidden;
+}
+
+.card-back {
+  font-size: 1.25rem;
+}
+
+.card-front {
+  font-size: 1.75rem;
+  transform: rotateY(180deg);
+}
+
+.card.matched .card-front {
+  background: var(--game-matched-bg) !important;
+}
