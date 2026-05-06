@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { useTheme } from 'next-themes'
+import { useTheme } from '@/components/ThemeProvider'
 import { useUser } from '@/hooks/useUser'
 import { useProgress } from '@/hooks/useProgress'
 import ResetButton from '@/components/ResetButton'

@@ -1,5 +1,5 @@
 'use client'
-import { useState, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { api } from '@/lib/api'
 import { validateUsername } from '@/lib/username'
 
@@ -10,21 +10,19 @@ export interface User {
 
 const KEY = 'minigames-user'
 
-function load(): User | null {
-  try {
-    const stored = localStorage.getItem(KEY)
-    return stored ? JSON.parse(stored) : null
-  } catch {
-    return null
-  }
-}
-
 function save(user: User) {
   localStorage.setItem(KEY, JSON.stringify(user))
 }
 
 export function useUser() {
-  const [user, setUser] = useState<User | null>(load)
+  const [user, setUser] = useState<User | null>(null)
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(KEY)
+      if (stored) setUser(JSON.parse(stored))
+    } catch {}
+  }, [])
 
   const register = useCallback(async (
     displayName: string,
@@ -36,7 +34,7 @@ export function useUser() {
     try {
       await api.registerUser(id, result.value)
     } catch {
-      // API unreachable — still persist locally so the user has an identity
+      // API unreachable — still persist locally
     }
     const newUser: User = { id, displayName: result.value }
     save(newUser)
@@ -47,7 +45,6 @@ export function useUser() {
   const registerAnonymous = useCallback(() => {
     const id = crypto.randomUUID()
     const newUser: User = { id, displayName: 'Anonymous' }
-    // Don't call API for anonymous users — they can claim a name in settings later
     save(newUser)
     setUser(newUser)
     return id

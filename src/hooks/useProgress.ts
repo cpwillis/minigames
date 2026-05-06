@@ -1,5 +1,5 @@
 'use client'
-import { useState, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { api } from '@/lib/api'
 
 export interface GameRecord {
@@ -9,16 +9,15 @@ export interface GameRecord {
 
 const KEY = 'minigames-progress'
 
-function load(): Record<string, GameRecord> {
-  try {
-    return JSON.parse(localStorage.getItem(KEY) ?? '{}')
-  } catch {
-    return {}
-  }
-}
-
 export function useProgress() {
-  const [progress, setProgress] = useState<Record<string, GameRecord>>(load)
+  const [progress, setProgress] = useState<Record<string, GameRecord>>({})
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(KEY)
+      if (stored) setProgress(JSON.parse(stored))
+    } catch {}
+  }, [])
 
   const submitResult = useCallback((
     id: string,
@@ -33,7 +32,6 @@ export function useProgress() {
       localStorage.setItem(KEY, JSON.stringify(next))
       return next
     })
-    // Submit to API silently — failures are non-blocking
     if (userId) {
       api.submitScore(userId, id, elapsedSeconds, points).catch(() => {})
     }

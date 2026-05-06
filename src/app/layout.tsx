@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { ThemeProvider } from 'next-themes'
+import { ThemeProvider, THEME_SCRIPT } from '@/components/ThemeProvider'
 import Nav from '@/components/Nav'
 import './globals.css'
 
@@ -50,12 +50,16 @@ const jsonLd = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
-      <body>
+      <head>
+        {/* Flash-free theme: sets class before first paint */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
+      <body suppressHydrationWarning>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider>
           <Nav />
           <main className="max-w-4xl mx-auto px-4 py-8">
             {children}
@@ -63,16 +67,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <footer className="border-t border-gray-200 dark:border-gray-800 mt-16">
             <div className="max-w-4xl mx-auto px-4 py-6 flex items-center justify-between text-xs text-gray-400 dark:text-gray-600">
               <span>minigames &copy; {new Date().getFullYear()}</span>
-              {process.env.NEXT_PUBLIC_GITHUB_URL && (
-                <a
-                  href={process.env.NEXT_PUBLIC_GITHUB_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-                >
-                  Open source &rarr;
-                </a>
-              )}
+              <a
+                href={process.env.NEXT_PUBLIC_GITHUB_URL ?? 'https://github.com/cpwillis/minigames'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+              >
+                Open source &rarr;
+              </a>
             </div>
           </footer>
         </ThemeProvider>

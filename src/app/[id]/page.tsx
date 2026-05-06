@@ -1,6 +1,8 @@
 import { GAME_IDS } from '@/features/games/game-ids'
 import GameClient from './GameClient'
 
+export const dynamicParams = false
+
 export function generateStaticParams() {
   return GAME_IDS.map(id => ({ id }))
 }
