@@ -9,8 +9,10 @@ export async function cors(c: Context, next: Next) {
   c.header('Access-Control-Allow-Origin', allowed)
   c.header('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS')
   c.header('Access-Control-Allow-Headers', 'Content-Type')
+  c.header('Access-Control-Max-Age', '86400')
   c.header('Vary', 'Origin')
+  c.header('X-Content-Type-Options', 'nosniff')
 
-  if (c.req.method === 'OPTIONS') return c.text('', 204)
+  if (c.req.method === 'OPTIONS') return c.body(null, 204)
   return next()
 }

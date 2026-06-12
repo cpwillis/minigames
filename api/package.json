@@ -6,7 +6,8 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "db:create": "wrangler d1 create minigames-db",
-    "db:migrate": "wrangler d1 execute minigames-db --file=src/db/schema.sql"
+    "db:migrate:local": "wrangler d1 execute minigames-db --local --file=src/db/schema.sql",
+    "db:migrate:remote": "wrangler d1 execute minigames-db --remote --file=src/db/schema.sql"
   },
   "dependencies": {
     "hono": "^4.0.0"
@@ -14,6 +15,6 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.0.0",
     "typescript": "^5.0.0",
-    "wrangler": "^3.0.0"
+    "wrangler": "^4.0.0"
   }
 }

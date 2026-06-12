@@ -8,6 +8,9 @@ out
 dist
 dist-ssr
 
+# Wrangler local state (local D1 sqlite, dev cache)
+api/.wrangler
+
 # Env (local only — commit .env.example instead)
 .env.local
 .env.*.local

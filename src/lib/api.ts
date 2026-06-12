@@ -8,50 +8,52 @@ export interface LeaderboardEntry {
 }
 
 export interface UserScore {
-  gameId: string
-  bestTime: number
+  game_id: string
+  best_time: number
   points: number
 }
 
-async function post<T>(path: string, body: unknown): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  })
-  if (!res.ok) throw new Error(`POST ${path} failed: ${res.status}`)
+// HTTP error (server responded non-2xx). Network/DNS failures throw plain TypeError from fetch.
+export class ApiError extends Error {
+  constructor(public status: number, message: string) {
+    super(message)
+    this.name = 'ApiError'
+  }
+}
+
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(`${BASE}${path}`, init)
+  if (!res.ok) {
+    let message = `${init?.method ?? 'GET'} ${path} failed: ${res.status}`
+    try {
+      const body = (await res.json()) as { error?: string }
+      if (body?.error) message = body.error
+    } catch {}
+    throw new ApiError(res.status, message)
+  }
   return res.json()
 }
 
-async function put<T>(path: string, body: unknown): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  })
-  if (!res.ok) throw new Error(`PUT ${path} failed: ${res.status}`)
-  return res.json()
-}
-
-async function get<T>(path: string): Promise<T> {
-  const res = await fetch(`${BASE}${path}`)
-  if (!res.ok) throw new Error(`GET ${path} failed: ${res.status}`)
-  return res.json()
-}
+const json = (method: string, body: unknown): RequestInit => ({
+  method,
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(body),
+})
 
 export const api = {
   registerUser: (id: string, displayName: string) =>
-    post('/users', { id, display_name: displayName }),
+    request('/users', json('POST', { id, display_name: displayName })),
 
   updateName: (uuid: string, displayName: string) =>
-    put(`/users/${uuid}/name`, { display_name: displayName }),
+    request(`/users/${uuid}/name`, json('PUT', { display_name: displayName })),
 
   submitScore: (userId: string, gameId: string, bestTime: number, points: number) =>
-    post('/scores', { user_id: userId, game_id: gameId, best_time: bestTime, points }),
+    request('/scores', json('POST', { user_id: userId, game_id: gameId, best_time: bestTime, points })),
 
-  getLeaderboard: () => get<LeaderboardEntry[]>('/leaderboard'),
+  getLeaderboard: () => request<LeaderboardEntry[]>('/scores/leaderboard'),
 
-  getLeaderboardForGame: (gameId: string) => get<LeaderboardEntry[]>(`/leaderboard/${gameId}`),
+  getLeaderboardForGame: (gameId: string) =>
+    request<LeaderboardEntry[]>(`/scores/leaderboard/${gameId}`),
 
-  getUserScores: (uuid: string) => get<UserScore[]>(`/users/${uuid}/scores`),
+  getUserScores: (uuid: string) => request<UserScore[]>(`/scores/user/${uuid}`),
 }

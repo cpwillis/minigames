@@ -3,11 +3,15 @@ main = "src/index.ts"
 compatibility_date = "2024-09-23"
 workers_dev = false
 
-[[routes]]
-pattern = "api.minigames.cpwillis.dev/*"
-zone_name = "cpwillis.dev"
+# custom_domain = true makes Cloudflare create and manage the DNS record automatically.
+# A plain zone route does NOT create DNS, which is why api.minigames.cpwillis.dev never resolved.
+routes = [
+  { pattern = "api.minigames.cpwillis.dev", custom_domain = true }
+]
 
 [[d1_databases]]
 binding = "DB"
 database_name = "minigames-db"
+# One-time setup: `npm run db:create` prints the real id, paste it here before deploying.
+# Local dev (`npm run dev`) ignores this id and uses a local SQLite file under .wrangler/.
 database_id = "REPLACE_WITH_DATABASE_ID"

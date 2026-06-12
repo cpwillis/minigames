@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
-import { api } from '@/lib/api'
+import { api, ApiError } from '@/lib/api'
 import { validateUsername } from '@/lib/username'
 
 export interface User {
@@ -59,8 +59,19 @@ export function useUser() {
 
     try {
       await api.updateName(user.id, result.value)
-    } catch {
-      return { ok: false, error: 'Could not reach server. Try again.' }
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 404) {
+        // User was saved locally while the API was down, register them now instead
+        try {
+          await api.registerUser(user.id, result.value)
+        } catch {
+          return { ok: false, error: 'Could not reach server. Try again.' }
+        }
+      } else if (err instanceof ApiError) {
+        return { ok: false, error: err.message }
+      } else {
+        return { ok: false, error: 'Could not reach server. Try again.' }
+      }
     }
     const updated: User = { ...user, displayName: result.value }
     save(updated)

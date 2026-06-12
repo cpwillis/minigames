@@ -1,4 +1,4 @@
-// Display-name censorship. Keep this file identical to src/lib/profanity.ts (frontend copy):
+// Display-name censorship. Keep this file identical to api/src/lib/profanity.ts (server copy):
 // the client gives instant feedback, the server is the actual enforcement point.
 // Names are already restricted to [a-zA-Z0-9 ] by validateUsername, so normalization
 // only needs to handle case, digit leetspeak, and spacing tricks (eg "F u C k", "sh1t").
