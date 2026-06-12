@@ -13,7 +13,10 @@ app.route('/scores', scores)
 
 app.get('/', c => c.json({ status: 'ok' }))
 app.notFound(c => c.json({ error: 'Not found' }, 404))
-// Never leak stack traces or internals to the client
-app.onError((_err, c) => c.json({ error: 'Internal error' }, 500))
+// Never leak stack traces or internals to the client; full error goes to wrangler tail / observability
+app.onError((err, c) => {
+  console.error(`${c.req.method} ${c.req.path}:`, err)
+  return c.json({ error: 'Internal error' }, 500)
+})
 
 export default app
