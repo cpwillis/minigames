@@ -1,0 +1,13 @@
+# Cloudflare Pages config for the frontend (minigames.cpwillis.dev), mirrors the dashboard.
+# Pages config files only support a limited key set: the build command (`npm run build`)
+# lives in the dashboard build configuration, not here.
+# The API worker has its own config in api/wrangler.toml.
+name = "minigames"
+pages_build_output_dir = "out"
+compatibility_date = "2026-06-12"
+
+# Mirrors the dashboard variables; NEXT_PUBLIC_* values are baked in at build time.
+[vars]
+NEXT_PUBLIC_SITE_URL = "https://minigames.cpwillis.dev"
+NEXT_PUBLIC_API_URL = "https://api.minigames.cpwillis.dev"
+NEXT_PUBLIC_GITHUB_URL = "https://github.com/cpwillis/minigames"
