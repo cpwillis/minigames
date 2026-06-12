@@ -12,6 +12,5 @@ routes = [
 [[d1_databases]]
 binding = "DB"
 database_name = "minigames-db"
-# One-time setup: `npm run db:create` prints the real id, paste it here before deploying.
 # Local dev (`npm run dev`) ignores this id and uses a local SQLite file under .wrangler/.
-database_id = "REPLACE_WITH_DATABASE_ID"
+database_id = "142bbafd-2e73-486c-a914-f93d1b84de83"
