@@ -46,3 +46,17 @@ test('profanity filter sees through spacing and leetspeak', () => {
 test('profanity is enforced through validateUsername, not just exported', () => {
   assert.equal(validateUsername('sh1t').ok, false)
 })
+
+// The worker keeps its own copy of the filter (separate deployable, cannot import from here) and
+// it is the actual enforcement point. If the two ever disagree, the client's preview of what will
+// be accepted stops matching what the server does.
+test('the worker copy of the profanity filter agrees with this one', async () => {
+  const { containsProfanity: server } = await import('../../api/src/lib/profanity.ts')
+  const cases = [
+    'sh1t', 'F u C k', 'ass', 'Bass Player', 'Cassandra', 'Ada Lovelace',
+    'fag', 'Flagstaff', 'n1gg3r', 'Titan', 'tit', 'Grace Hopper', 'a55',
+  ]
+  for (const c of cases) {
+    assert.equal(server(c), containsProfanity(c), `disagreement on ${JSON.stringify(c)}`)
+  }
+})
