@@ -2,13 +2,25 @@
 
 Browser-based developer mini games. 15 games covering CS concepts, typing, memory, git, regex, and more. Hosted at [minigames.cpwillis.dev](https://minigames.cpwillis.dev).
 
+## Status and support
+
+This is an unpaid hobby project. **There is no support**: no help desk, no SLA, no uptime
+commitment, and no undertaking to answer issues or fix anything. It is provided as is, with no
+warranty, and the author accepts no liability for its use. It may be changed, taken offline or
+deleted at any time, without notice, along with every score and display name stored on the server.
+Do not depend on it. Full terms: [minigames.cpwillis.dev/legal](https://minigames.cpwillis.dev/legal)
+(source: `src/app/legal/page.tsx`).
+
 ## Stack
 
 - **Next.js 15** — App Router, TypeScript, static export (`output: 'export'`)
-- **Tailwind CSS v4** — utility styling
-- **next-themes** — flash-free light/dark/system toggle
+- **Tailwind CSS v4** — one semantic token palette in `src/app/globals.css`; components use
+  role names (`bg-surface`, `text-muted`) rather than per-theme colour pairs
 - **Cloudflare Pages** — hosts the static `out/` build
 - **Cloudflare Workers + Hono + D1** — optional API for the shared leaderboard
+
+Runtime dependencies: `next`, `react`, `react-dom` on the frontend, `hono` on the worker. Nothing
+else. Theming, dialogs, tabs and the timer are hand-rolled because each is a few lines.
 
 ## Running locally
 
@@ -25,6 +37,12 @@ npm run dev                # worker on http://localhost:8787
 npm install
 cp .env.example .env.local # points NEXT_PUBLIC_API_URL at localhost:8787
 npm run dev                # app on http://localhost:3000
+```
+
+Tests are `node --test` over `src/**/*.test.ts` — no framework, no config:
+
+```bash
+npm test
 ```
 
 Games are fully playable without the API. Progress is stored in localStorage; the worker only backs the shared leaderboard and display names.
@@ -83,12 +101,18 @@ One-off manual deploy instead: `cd api && npm run deploy`.
 - All DB access uses bound parameters (no string-built SQL).
 - CORS is locked to the production origin and `localhost:3000`; the worker never returns stack traces (`app.onError`).
 - `public/_headers` sets CSP, `X-Frame-Options`, `nosniff`, and referrer policy on the static site; display names render through React escaping, so stored XSS is blocked twice (charset whitelist + escaping).
+- No cookies, no analytics and no third-party scripts are served. Progress and the theme live in
+  `localStorage`; only a random id, a chosen display name and per-game times/points reach the server.
 - A player's UUID is the only credential (no accounts): it is unguessable but anyone holding it can rename that player or submit their scores, and scores are client-computed, so the leaderboard is tamper-resistant, not tamper-proof. For abuse, add a Cloudflare WAF rate-limiting rule on `api.minigames.cpwillis.dev/*` (eg 20 req/min per IP on POST/PUT).
 
 ## Adding a game
 
-See [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md).
+See [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md). `src/features/games/game-ids.ts` is the
+single source of truth for ids: `GameMeta.id` is typed from it, so registering a game without a
+route (or the reverse) fails the build. The worker keeps its own copy in `api/src/lib/validate.ts`
+because it is a separate deployable.
 
 ## License
 
-MIT
+MIT for the code, which carries its own warranty disclaimer. Game text and artwork are original.
+See [/legal](https://minigames.cpwillis.dev/legal) for the terms that apply to using the site.

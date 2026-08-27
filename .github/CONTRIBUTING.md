@@ -1,5 +1,10 @@
 # Contributing
 
+This project has **no support and no maintenance commitment**. Issues and pull requests may be
+read, ignored, or closed without reply, and the whole thing can be taken offline at any time
+without notice. Contribute only if you are happy on those terms. See
+[/legal](https://minigames.cpwillis.dev/legal).
+
 ## Running locally
 
 ```bash
@@ -35,19 +40,30 @@ export default function YourGame({ onComplete }: { onComplete: () => void }) {
 }
 ```
 
-2. Open `src/features/games/registry.ts` and add your import + one entry to the `GAMES` array.
+2. Add the id to `src/features/games/game-ids.ts` (the single source of truth for ids and static
+   routes) and to the `GAME_IDS` set in `api/src/lib/validate.ts` (a separate deployable, so it
+   cannot import from the frontend). The worker rejects scores for unknown ids.
 
-3. Add your game URL to `public/sitemap.xml`.
+3. Open `src/features/games/registry.ts` and add your import + one entry to the `GAMES` array.
 
-4. Run `npm run build` — zero TypeScript errors required.
+4. Add your game URL to `public/sitemap.xml`.
+
+5. Run `npm run build` and `npm test`. Mismatches between the registry and `game-ids.ts` fail the
+   build in both directions.
 
 ## Game requirements
 
 - Must call `onComplete()` exactly once on win, never before
 - Must not make external API calls — all data stays client-side
 - `maxPoints` must match difficulty tier (easy=500, medium=750, hard=1000)
-- Must work in both light and dark mode (use Tailwind `dark:` classes or CSS vars)
-- No new npm dependencies in game files
+- Must use the semantic colour tokens (`bg-surface`, `text-muted`, `border-line`, `text-accent`
+  and friends, defined in `src/app/globals.css`). Do not write `dark:` variants or raw palette
+  colours: the tokens already swap per theme.
+- Must be playable from a keyboard: interactive elements are `<button>`, not `<div onClick>`
+- Every control needs an accessible name (`aria-label` where the visible content is only an emoji)
+- Must not embed third-party content: no quotes, lyrics, logos, brand marks, images or question
+  banks copied from elsewhere. Write original text, or use plain factual material.
+- No new npm dependencies, in game files or anywhere else
 
 ## Submitting a PR
 
@@ -55,7 +71,8 @@ Fork the repo, create a branch, and open a PR against `main`. The PR template wi
 
 ## Reporting bugs
 
-Open an issue using the **Bug report** template.
+Open an issue using the **Bug report** template. No response is promised: see the note at the
+top of this file.
 
 ## Suggesting games
 

@@ -3,6 +3,7 @@
   <url><loc>https://minigames.cpwillis.dev/</loc><priority>1.0</priority><changefreq>weekly</changefreq></url>
   <url><loc>https://minigames.cpwillis.dev/leaderboard</loc><priority>0.8</priority><changefreq>daily</changefreq></url>
   <url><loc>https://minigames.cpwillis.dev/settings</loc><priority>0.3</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://minigames.cpwillis.dev/legal</loc><priority>0.3</priority><changefreq>yearly</changefreq></url>
   <url><loc>https://minigames.cpwillis.dev/word-search</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://minigames.cpwillis.dev/caesar-cipher</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://minigames.cpwillis.dev/code-trivia</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>

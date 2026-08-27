@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import Link from 'next/link'
 import { ThemeProvider, THEME_SCRIPT } from '@/components/ThemeProvider'
 import Nav from '@/components/Nav'
 import './globals.css'
@@ -90,6 +91,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 and no guarantee it stays online.
               </p>
               <nav aria-label="Footer" className="flex shrink-0 items-center gap-4">
+                <Link href="/legal" className="transition-colors hover:text-fg">
+                  Terms &amp; Privacy
+                </Link>
                 <a
                   href={GITHUB_URL}
                   target="_blank"
