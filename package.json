@@ -7,11 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "npm run test:types && npm run test:unit && npm run test:migrations && npm run test:api",
+    "test": "npm run test:types && npm run test:unit && npm run test:components && npm run test:migrations && npm run test:api",
     "test:unit": "node --test 'tests/unit.test.ts' 'tests/secret.test.ts' 'tests/contract.test.mjs'",
     "test:api": "node --test tests/api.test.mjs",
     "test:migrations": "node --test tests/migrations.test.mjs",
-    "test:types": "tsc --noEmit && cd api && tsc --noEmit"
+    "test:types": "tsc --noEmit && cd api && tsc --noEmit",
+    "test:components": "TSX_TSCONFIG_PATH=tests/tsconfig.tsx.json node --import tsx --import ./tests/helpers/dom.mjs --test 'tests/components.test.ts' 'tests/games.test.ts' 'tests/state.test.ts'"
   },
   "dependencies": {
     "next": "^15.5.18",
@@ -22,12 +23,17 @@
     "postcss": "^8.5.10"
   },
   "devDependencies": {
+    "@happy-dom/global-registrator": "^20.11.8",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "happy-dom": "^20.11.8",
     "postcss": "^8.5.10",
     "tailwindcss": "^4",
+    "tsx": "^4.23.12",
     "typescript": "^5"
   },
   "engines": {

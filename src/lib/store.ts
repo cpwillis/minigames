@@ -33,6 +33,17 @@ export function writeStored<T>(key: string, value: T) {
   listeners.forEach(l => l())
 }
 
+// Another tab writing localStorage does not invalidate this one's cache, so two open tabs would
+// drift apart until a reload. The storage event only fires in *other* tabs, which is exactly the
+// case that needs it.
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', e => {
+    if (e.key === null) cache.clear()
+    else cache.delete(e.key)
+    listeners.forEach(l => l())
+  })
+}
+
 export function clearStored(key: string) {
   cache.delete(key)
   try { localStorage.removeItem(key) } catch {}

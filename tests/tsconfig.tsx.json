@@ -1,0 +1,8 @@
+{
+  "//": "For the component test layer only. tsx (esbuild) reads this instead of the root config, which must keep jsx: preserve for Next. Here JSX compiles to React's automatic runtime so no React import is needed at runtime.",
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  }
+}

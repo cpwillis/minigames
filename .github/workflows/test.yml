@@ -12,7 +12,7 @@ on:
         description: Which layer to run
         type: choice
         default: all
-        options: [all, types, unit, migrations, api]
+        options: [all, types, unit, components, migrations, api]
       ref:
         description: Branch, tag or SHA (defaults to the branch you dispatch from)
         type: string
@@ -59,6 +59,10 @@ jobs:
       - name: Unit and contract tests
         if: inputs.suite == 'all' || inputs.suite == 'unit'
         run: npm run test:unit
+
+      - name: Component tests
+        if: inputs.suite == 'all' || inputs.suite == 'components'
+        run: npm run test:components
 
       - name: Migration tests
         if: inputs.suite == 'all' || inputs.suite == 'migrations'

@@ -42,8 +42,8 @@ npm run dev                # app on http://localhost:3000
 Tests are `node --test`, no framework and no test dependencies:
 
 ```bash
-npm test              # types, unit, contract, migrations, API integration
-npm run test:unit     # sub-second, no wrangler: the loop to use while editing
+npm test              # types, unit, contract, components, migrations, API integration
+npm run test:unit     # sub-second, no wrangler, no DOM: the loop to use while editing
 ```
 
 The API and migration layers start a real worker against a throwaway local D1 under `tests/.tmp`,
