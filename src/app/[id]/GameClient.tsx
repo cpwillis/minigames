@@ -18,7 +18,7 @@ export default function GameClient({ id }: { id: string }) {
   const { progress, submitResult } = useProgress()
   const [restartKey, setRestartKey] = useState(0)
   const { elapsed, stop } = useTimer(restartKey)
-  const { user, isRegistered } = useUser()
+  const { syncUser, isRegistered } = useUser()
   const [result, setResult] = useState<{ elapsed: number; points: number; previous: GameRecord | null } | null>(null)
   const [showUsernameDialog, setShowUsernameDialog] = useState(false)
   // Every game seeds itself with Math.random() during render, so the prerendered HTML never
@@ -32,7 +32,7 @@ export default function GameClient({ id }: { id: string }) {
     const points = calcPoints(game.maxPoints, finalTime)
     // Snapshot before submitting: submitResult overwrites progress[game.id] straight away.
     const previous = progress[game.id] ?? null
-    submitResult(game.id, finalTime, points, user?.id)
+    submitResult(game.id, finalTime, points, syncUser)
     setResult({ elapsed: finalTime, points, previous })
     if (!isRegistered) setShowUsernameDialog(true)
   }

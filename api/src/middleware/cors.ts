@@ -8,7 +8,9 @@ export async function cors(c: Context, next: Next) {
 
   c.header('Access-Control-Allow-Origin', allowed)
   c.header('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS')
-  c.header('Access-Control-Allow-Headers', 'Content-Type')
+  // Authorization carries the per-user secret; without it here every mutating request
+  // fails preflight.
+  c.header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
   c.header('Access-Control-Max-Age', '86400')
   c.header('Vary', 'Origin')
   c.header('X-Content-Type-Options', 'nosniff')

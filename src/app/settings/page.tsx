@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useTheme } from '@/components/ThemeProvider'
 import { useUser } from '@/hooks/useUser'
@@ -28,10 +28,17 @@ export default function SettingsPage() {
   const { user, isRegistered, register, updateName } = useUser()
   const { progress, totalPoints } = useProgress()
 
-  const [name, setName] = useState(user?.displayName ?? '')
+  // useState only reads its initialiser once, and `user` is null on that first render because
+  // localStorage has not been read yet, so a saved name never appeared in the field.
+  const [name, setName] = useState('')
+  const [edited, setEdited] = useState(false)
   const [nameError, setNameError] = useState('')
   const [nameSaved, setNameSaved] = useState(false)
   const [nameLoading, setNameLoading] = useState(false)
+
+  useEffect(() => {
+    if (!edited && user) setName(user.displayName)
+  }, [user, edited])
 
   const saveName = async () => {
     if (nameLoading) return
@@ -41,6 +48,7 @@ export default function SettingsPage() {
     const result = isRegistered ? await updateName(name) : await register(name)
     setNameLoading(false)
     if (result.ok) {
+      setEdited(false)
       setNameSaved(true)
       setTimeout(() => setNameSaved(false), 2000)
     } else {
@@ -64,7 +72,7 @@ export default function SettingsPage() {
               id="display-name"
               type="text"
               value={name}
-              onChange={e => { setName(e.target.value); setNameError(''); setNameSaved(false) }}
+              onChange={e => { setEdited(true); setName(e.target.value); setNameError(''); setNameSaved(false) }}
               onKeyDown={e => e.key === 'Enter' && saveName()}
               maxLength={20}
               placeholder="your name"

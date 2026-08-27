@@ -15,7 +15,7 @@ export function useProgress() {
     id: string,
     elapsedSeconds: number,
     points: number,
-    userId?: string,
+    user?: { id: string; secret: string },
   ) => {
     const current = readStored<Progress>(KEY, EMPTY)
     const existing = current[id]
@@ -23,7 +23,7 @@ export function useProgress() {
       writeStored<Progress>(KEY, { ...current, [id]: { bestTime: elapsedSeconds, bestPoints: points } })
     }
     // Fire and forget: the leaderboard is a nicety, a failed submit must not break the game.
-    if (userId) api.submitScore(userId, id, elapsedSeconds, points).catch(() => {})
+    if (user) api.submitScore(user.id, id, elapsedSeconds, points, user.secret).catch(() => {})
   }, [])
 
   const resetProgress = useCallback(() => clearStored(KEY), [])

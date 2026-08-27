@@ -1,3 +1,7 @@
+-- Baseline. The live database was created by running src/db/schema.sql directly, before
+-- migrations existed, so every statement here is IF NOT EXISTS: applying this to production
+-- is a no-op that only records the baseline as applied. On a fresh database it builds it.
+
 CREATE TABLE IF NOT EXISTS users (
   id           TEXT    PRIMARY KEY,
   display_name TEXT    NOT NULL,
