@@ -264,6 +264,66 @@ describe('recovering from a wiped server row', () => {
     }
   })
 
+  // Parallel backfill was up to fifteen simultaneous writes from one IP, which forces any rate
+  // limiting rule to be set uselessly high to avoid blocking a legitimate player.
+  test('the backfill sends one request at a time', async () => {
+    let inFlight = 0
+    let peak = 0
+    const realFetch = globalThis.fetch
+    globalThis.fetch = (async (url: any, init: any = {}) => {
+      const path = new URL(String(url), 'http://x').pathname
+      if (path === '/scores') {
+        inFlight++
+        peak = Math.max(peak, inFlight)
+        await new Promise(r => setTimeout(r, 15))
+        inFlight--
+      }
+      return new Response(JSON.stringify({ ok: true }), { status: 200 })
+    }) as typeof fetch
+    try {
+      const progress = Object.fromEntries(
+        ['big-o', 'hangman', 'color-hex', 'json-fix', 'regex-match', 'word-search']
+          .map(g => [g, { bestTime: 10, bestPoints: 500 }]),
+      )
+      localStorage.setItem('minigames-progress', JSON.stringify(progress))
+      window.dispatchEvent(new StorageEvent('storage', { key: null }))
+
+      const { backfillScores } = await load('../src/hooks/useUser.ts')
+      await backfillScores(USER)
+      assert.equal(peak, 1, `at most one write should be in flight, saw ${peak}`)
+    } finally {
+      globalThis.fetch = realFetch
+    }
+  })
+
+  test('one rejected score does not strand the rest', async () => {
+    const sent: string[] = []
+    const realFetch = globalThis.fetch
+    globalThis.fetch = (async (url: any, init: any = {}) => {
+      const path = new URL(String(url), 'http://x').pathname
+      if (path === '/scores') {
+        const gameId = JSON.parse(init.body).game_id
+        sent.push(gameId)
+        if (gameId === 'hangman') return new Response(JSON.stringify({ error: 'nope' }), { status: 400 })
+      }
+      return new Response(JSON.stringify({ ok: true }), { status: 200 })
+    }) as typeof fetch
+    try {
+      localStorage.setItem('minigames-progress', JSON.stringify({
+        'big-o': { bestTime: 10, bestPoints: 500 },
+        'hangman': { bestTime: 10, bestPoints: 500 },
+        'color-hex': { bestTime: 10, bestPoints: 500 },
+      }))
+      window.dispatchEvent(new StorageEvent('storage', { key: null }))
+
+      const { backfillScores } = await load('../src/hooks/useUser.ts')
+      await backfillScores(USER)
+      assert.deepEqual(sent, ['big-o', 'hangman', 'color-hex'], 'every game should still be attempted')
+    } finally {
+      globalThis.fetch = realFetch
+    }
+  })
+
   test('a successful submit does not re-register', async () => {
     const calls: any[] = []
     const realFetch = globalThis.fetch

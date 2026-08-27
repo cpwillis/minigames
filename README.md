@@ -123,8 +123,13 @@ One-off manual deploy instead: `cd api && npm run deploy`.
   `localStorage`; only a random id, a chosen display name and per-game times/points reach the server.
 - Scores are still computed in the browser, so a determined player can submit a score they did not
   earn for **their own** account. They can no longer touch anyone else's. Treat the leaderboard as
-  decorative. For volume abuse, add a Cloudflare WAF rate-limiting rule on
-  `api.minigames.cpwillis.dev/*` (eg 20 req/min per IP on POST/PUT).
+  decorative.
+- For volume abuse, add a Cloudflare rate limiting rule on the zone (Security rules → Rate limiting
+  rules). Writes only, so a shared IP cannot lose access to the leaderboard:
+  `(http.host eq "api.minigames.cpwillis.dev" and http.request.method in {"POST" "PUT"})`.
+  The free zone plan allows one rule, IP counting, a 10 second window and Block for 10 seconds.
+  `backfillScores` submits sequentially precisely so this threshold can be set low; keep it that
+  way, or a returning player's re-sync looks like a flood.
 
 ## Shared code
 

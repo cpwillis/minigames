@@ -29,15 +29,22 @@ function newSecret(): string {
  *
  * Games are playable before you pick a name, and until now those results only ever existed in
  * localStorage: the first thing a new player finished was never on the leaderboard. Registering
- * now backfills them. Best-effort, one failure must not lose the rest.
+ * now backfills them.
+ *
+ * One request at a time, deliberately. Fired in parallel this is up to fifteen simultaneous
+ * writes from one IP, which is indistinguishable from a flood to a rate limiter and would force
+ * any such rule to be set uselessly high. It runs at most once per player and nothing waits on
+ * it, so the extra second costs nobody anything. Best-effort: one failure must not lose the rest.
  */
 export async function backfillScores(user: User) {
   const progress = readStored<Record<string, GameRecord>>(PROGRESS_KEY, {})
-  await Promise.allSettled(
-    Object.entries(progress).map(([gameId, record]) =>
-      api.submitScore(user.id, gameId, record.bestTime, record.bestPoints, user.secret),
-    ),
-  )
+  for (const [gameId, record] of Object.entries(progress)) {
+    try {
+      await api.submitScore(user.id, gameId, record.bestTime, record.bestPoints, user.secret)
+    } catch {
+      // Keep going; a single rejected score should not strand the others.
+    }
+  }
 }
 
 /**
