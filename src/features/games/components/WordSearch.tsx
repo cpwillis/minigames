@@ -13,7 +13,7 @@ export const meta = {
 }
 
 const SIZE = 12
-const WORDS = ['CODE', 'HOST', 'DATABASE', 'SERVER', 'DOMAIN', 'HTML', 'NETWORK', 'WEB', 'JAVASCRIPT', 'DEVNOTES']
+const WORDS = ['CODE', 'HOST', 'DATABASE', 'SERVER', 'DOMAIN', 'HTML', 'NETWORK', 'WEB', 'JAVASCRIPT', 'COMPILER']
 const DIRS = [[0,1],[1,0],[1,1],[1,-1],[0,-1],[-1,0],[-1,-1],[-1,1]]
 const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 

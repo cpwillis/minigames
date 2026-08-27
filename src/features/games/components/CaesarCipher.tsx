@@ -11,8 +11,8 @@ export const meta = {
   order: 2,
 }
 
-const ORIGINAL = 'Talk is cheap. Show me the code.'
-const CIPHER = 'Wdon lv fkhds. Vkrz ph wkh frgh.'
+const ORIGINAL = 'Ship small changes and read the logs.'
+const CIPHER = 'Vkls vpdoo fkdqjhv dqg uhdg wkh orjv.'
 
 export default function CaesarCipher({ onComplete }: { onComplete: () => void }) {
   const [input, setInput] = useState('')
