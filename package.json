@@ -6,7 +6,8 @@
     "dev": "NODE_OPTIONS='--localstorage-file=/tmp/minigames-dev-storage.json' next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "node --test 'src/**/*.test.ts'"
   },
   "dependencies": {
     "next": "^15.5.18",

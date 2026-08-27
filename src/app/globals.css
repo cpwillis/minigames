@@ -44,3 +44,11 @@
     cursor: pointer;
   }
 }
+
+/* Referenced by RiddleBox and CaesarCipher as animate-[shake_0.4s_ease] — the keyframe
+   was never defined, so a wrong answer flashed the border and nothing else. */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}

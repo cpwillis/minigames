@@ -6,6 +6,7 @@ import { useProgress } from '@/hooks/useProgress'
 import { useTimer } from '@/hooks/useTimer'
 import { useUser } from '@/hooks/useUser'
 import { calcPoints } from '@/lib/scoring'
+import type { GameRecord } from '@/features/games/types'
 import GameHeader from '@/components/GameHeader'
 import CompletionOverlay from '@/components/CompletionOverlay'
 import UsernameDialog from '@/components/UsernameDialog'
@@ -15,17 +16,19 @@ export default function GameClient({ id }: { id: string }) {
   if (!game) notFound()
 
   const { progress, submitResult } = useProgress()
-  const { elapsed, stop } = useTimer()
-  const { user, isRegistered } = useUser()
   const [restartKey, setRestartKey] = useState(0)
-  const [result, setResult] = useState<{ elapsed: number; points: number } | null>(null)
+  const { elapsed, stop } = useTimer(restartKey)
+  const { user, isRegistered } = useUser()
+  const [result, setResult] = useState<{ elapsed: number; points: number; previous: GameRecord | null } | null>(null)
   const [showUsernameDialog, setShowUsernameDialog] = useState(false)
 
   const handleComplete = () => {
     const finalTime = stop()
     const points = calcPoints(game.maxPoints, finalTime)
+    // Snapshot before submitting: submitResult overwrites progress[game.id] straight away.
+    const previous = progress[game.id] ?? null
     submitResult(game.id, finalTime, points, user?.id)
-    setResult({ elapsed: finalTime, points })
+    setResult({ elapsed: finalTime, points, previous })
     if (!isRegistered) setShowUsernameDialog(true)
   }
 
@@ -36,7 +39,6 @@ export default function GameClient({ id }: { id: string }) {
   }
 
   const GameComponent = game.component
-  const previous = progress[game.id] ?? null
 
   return (
     <div className="-mx-4 -mt-8">
@@ -51,7 +53,7 @@ export default function GameClient({ id }: { id: string }) {
         <CompletionOverlay
           elapsed={result.elapsed}
           points={result.points}
-          previous={previous}
+          previous={result.previous}
           onPlayAgain={handleRestart}
         />
       )}

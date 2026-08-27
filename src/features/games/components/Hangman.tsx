@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 export const meta = {
   id: 'hangman' as const,
@@ -37,10 +37,12 @@ export default function Hangman({ onComplete }: { onComplete: () => void }) {
     }
   }, [isWon, won, onComplete])
 
-  const guess = (letter: string) => {
-    if (lost || isWon || guessed.has(letter)) return
-    setGuessed(prev => new Set([...prev, letter]))
-  }
+  const over = lost || isWon
+
+  const guess = useCallback((letter: string) => {
+    if (over) return
+    setGuessed(prev => prev.has(letter) ? prev : new Set([...prev, letter]))
+  }, [over])
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -49,7 +51,7 @@ export default function Hangman({ onComplete }: { onComplete: () => void }) {
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [guess])
 
   return (
     <div className="space-y-5 max-w-md">

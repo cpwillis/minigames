@@ -29,7 +29,7 @@ const ROUNDS: Round[] = [
       '}',
     ],
     bugLine: 3,
-    fixes: ['Add comma after line 3', 'Add comma after line 2 ("age": 30)', 'Remove the "city" line'],
+    fixes: ['Add a comma after "city": "London"', 'Add a comma after "age": 30', 'Remove the "city" line'],
     correctFix: 1,
     explanation: 'Missing comma after "age": 30 — each property except the last needs a trailing comma.',
   },

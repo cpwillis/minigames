@@ -125,11 +125,12 @@ export default function RegexMatch({ onComplete }: { onComplete: () => void }) {
               : ' border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500'
           }
           return (
-            <label key={i} className={cls} onClick={() => toggle(i)}>
+            <label key={i} className={cls}>
               <input
                 type="checkbox"
                 checked={checked.has(i)}
                 onChange={() => toggle(i)}
+                disabled={submitted}
                 className="accent-green-500"
               />
               <span className="font-mono text-sm text-gray-900 dark:text-gray-100">{s}</span>

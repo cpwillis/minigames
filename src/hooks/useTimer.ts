@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 
-export function useTimer() {
+export function useTimer(resetKey: number) {
   const [elapsed, setElapsed] = useState(0)
   const startRef = useRef(Date.now())
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -10,6 +10,7 @@ export function useTimer() {
   useEffect(() => {
     startRef.current = Date.now()
     stoppedRef.current = false
+    setElapsed(0)
     intervalRef.current = setInterval(() => {
       if (!stoppedRef.current) {
         setElapsed((Date.now() - startRef.current) / 1000)
@@ -18,7 +19,7 @@ export function useTimer() {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current)
     }
-  }, [])
+  }, [resetKey])
 
   const stop = (): number => {
     stoppedRef.current = true

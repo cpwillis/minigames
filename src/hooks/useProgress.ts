@@ -25,7 +25,7 @@ export function useProgress() {
       const existing = prev[id]
       if (existing && existing.bestTime <= elapsedSeconds) return prev
       const next = { ...prev, [id]: { bestTime: elapsedSeconds, bestPoints: points } }
-      localStorage.setItem(KEY, JSON.stringify(next))
+      try { localStorage.setItem(KEY, JSON.stringify(next)) } catch {}
       return next
     })
     if (userId) {
@@ -34,7 +34,7 @@ export function useProgress() {
   }, [])
 
   const resetProgress = useCallback(() => {
-    localStorage.removeItem(KEY)
+    try { localStorage.removeItem(KEY) } catch {}
     setProgress({})
   }, [])
 

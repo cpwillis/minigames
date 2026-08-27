@@ -1,4 +1,4 @@
-import { containsProfanity } from './profanity'
+import { containsProfanity } from './profanity.ts'
 
 // English alphanumeric + internal spaces, 1–20 chars, no leading/trailing spaces
 const RE = /^[a-zA-Z0-9][a-zA-Z0-9 ]{0,18}[a-zA-Z0-9]$|^[a-zA-Z0-9]{1,2}$/

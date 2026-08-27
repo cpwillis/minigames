@@ -1,5 +1,4 @@
 'use client'
-import { useEffect } from 'react'
 import Link from 'next/link'
 import { formatTime } from '@/lib/utils'
 import type { GameRecord } from '@/features/games/types'
@@ -13,11 +12,6 @@ interface CompletionOverlayProps {
 
 export default function CompletionOverlay({ elapsed, points, previous, onPlayAgain }: CompletionOverlayProps) {
   const isNewBest = !previous || elapsed < previous.bestTime
-
-  useEffect(() => {
-    const id = setTimeout(() => { window.location.href = '/' }, 8000)
-    return () => clearTimeout(id)
-  }, [])
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
