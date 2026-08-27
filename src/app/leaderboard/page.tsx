@@ -5,12 +5,21 @@ import { useProgress } from '@/hooks/useProgress'
 import { useUser } from '@/hooks/useUser'
 import { GAMES } from '@/features/games/registry'
 import { formatTime } from '@/lib/utils'
-import { api, type LeaderboardEntry } from '@/lib/api'
+import { api, type LeaderboardEntry, type HistoryEntry } from '@/lib/api'
 
 const TABS = [
   { id: 'global', label: 'Global' },
   { id: 'mine', label: 'Mine' },
+  { id: 'history', label: 'History' },
 ] as const
+
+const TITLES: Record<string, string> = Object.fromEntries(GAMES.map(g => [g.id, g.title]))
+
+function formatWhen(ms: number): string {
+  return new Date(ms).toLocaleString(undefined, {
+    day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+  })
+}
 
 type Tab = typeof TABS[number]['id']
 
@@ -21,6 +30,8 @@ export default function LeaderboardPage() {
   const [rows, setRows] = useState<LeaderboardEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [history, setHistory] = useState<HistoryEntry[] | null>(null)
+  const [historyError, setHistoryError] = useState(false)
 
   // One loader for the first fetch and the retry: they had drifted into two copies.
   const load = useCallback(() => {
@@ -33,6 +44,15 @@ export default function LeaderboardPage() {
   }, [])
 
   useEffect(load, [load])
+
+  // Every attempt, not just the personal best that the Mine tab shows. Server-side and
+  // authenticated, so it only exists once a name has been saved.
+  useEffect(() => {
+    if (tab !== 'history' || !user || user.anonymous || history) return
+    api.getHistory(user.id, user.secret)
+      .then(setHistory)
+      .catch(() => setHistoryError(true))
+  }, [tab, user, history])
 
   const completed = Object.keys(progress).length
 
@@ -112,7 +132,7 @@ export default function LeaderboardPage() {
             </table>
           </div>
         )
-      ) : (
+      ) : tab === 'mine' ? (
         <div className="space-y-4">
           <p className="text-sm text-muted">
             <span className="font-medium text-fg">{totalPoints.toLocaleString()}</span> points
@@ -157,6 +177,58 @@ export default function LeaderboardPage() {
                     </tr>
                   )
                 })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : !user || user.anonymous ? (
+        <p className="text-sm text-muted">
+          Save a display name in{' '}
+          <Link href="/settings" className="underline underline-offset-2 hover:text-fg">Settings</Link>{' '}
+          to keep a history of your runs.
+        </p>
+      ) : historyError ? (
+        <div className="panel flex flex-wrap items-center gap-3 p-4">
+          <p className="text-sm text-muted">Could not load your history.</p>
+          <button onClick={() => { setHistoryError(false); setHistory(null) }} className="btn">Retry</button>
+        </div>
+      ) : history === null ? (
+        <div className="space-y-2" aria-busy="true">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="h-10 animate-pulse rounded-lg bg-sunken" />
+          ))}
+        </div>
+      ) : history.length === 0 ? (
+        <p className="text-sm text-muted">No runs recorded yet.</p>
+      ) : (
+        <div className="space-y-4">
+          <p className="text-sm text-muted">
+            Every run, newest first. The Mine tab shows only your best for each game.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <caption className="sr-only">Every run you have completed</caption>
+              <thead>
+                <tr className="border-b border-line text-left text-xs text-muted">
+                  <th scope="col" className="pb-2 font-medium">Game</th>
+                  <th scope="col" className="pb-2 font-medium">When</th>
+                  <th scope="col" className="pb-2 text-right font-medium">Time</th>
+                  <th scope="col" className="pb-2 text-right font-medium">Points</th>
+                </tr>
+              </thead>
+              <tbody>
+                {history.map((run, i) => (
+                  <tr key={`${run.game_id}-${run.created_at}-${i}`} className="border-b border-line">
+                    <td className="py-2.5 text-fg">{TITLES[run.game_id] ?? run.game_id}</td>
+                    <td className="py-2.5 text-muted">{formatWhen(run.created_at)}</td>
+                    <td className="py-2.5 text-right font-mono tabular-nums text-muted">
+                      {formatTime(run.elapsed_time)}
+                    </td>
+                    <td className="py-2.5 text-right font-mono tabular-nums text-fg">
+                      {run.points.toLocaleString()}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

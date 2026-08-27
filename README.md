@@ -30,7 +30,7 @@ Local dev mirrors production exactly: the worker runs on `localhost:8787` agains
 # Terminal 1: API + local D1
 cd api
 npm install
-npm run db:migrate:local   # applies schema.sql to the local D1 (run once, idempotent)
+npm run db:migrate:local   # applies api/migrations/*.sql to the local D1
 npm run dev                # worker on http://localhost:8787
 
 # Terminal 2: frontend
@@ -65,16 +65,22 @@ Games are fully playable without the API. Progress is stored in localStorage; th
 4. Custom domain: `minigames.cpwillis.dev`.
 5. Disable preview deployments: Settings → Builds & deployments → branch controls → main only.
 
-### 2. Cloudflare D1 (database, one-time)
+### 2. Cloudflare D1 (database)
 
 ```bash
 cd api
 npm install
 npx wrangler login
-npm run db:create          # prints a database_id: paste it into api/wrangler.toml
-npm run db:migrate:remote  # applies schema.sql to the production D1
-git add wrangler.toml && git commit -m "chore: set D1 database id"
+npm run db:create          # first time only: prints a database_id for api/wrangler.toml
+npm run db:migrate:remote  # applies any unapplied migrations to the production D1
+npm run db:migrations:list # what is applied and what is pending
 ```
+
+Schema changes are migrations in `api/migrations/`, applied with the commands above. **Never edit
+a migration that has been applied**: add a new numbered file. `0001_baseline.sql` is entirely
+`IF NOT EXISTS`, so it is a no-op against the database that predates migrations, and builds a
+fresh one from scratch. Rehearse against local D1 (`npm run db:migrate:local`) before running
+anything against production.
 
 ### 3. Cloudflare Workers (API, git-automated)
 
@@ -97,13 +103,32 @@ One-off manual deploy instead: `cd api && npm run deploy`.
 
 ## Security
 
-- All input is validated server-side (the client checks are UX only): display names are `[a-zA-Z0-9 ]`, 1 to 20 chars, profanity-filtered (`api/src/lib/profanity.ts`, keep in sync with `src/lib/profanity.ts`); user ids must be v4 UUIDs; `game_id` must be in the whitelist in `api/src/lib/validate.ts` (update it when adding a game); points and times are bounds-checked.
+- Every account has a **secret**: 32 random bytes generated in the browser, held in localStorage,
+  never displayed. Renaming, submitting scores and reading your own records require
+  `Authorization: Bearer <secret>`; the server stores only its SHA-256 and compares in constant
+  time. The user id is public and is just an identifier. Rows predating this have `secret_hash`
+  NULL and are claimed by the first caller to present a secret, because their ids were public
+  anyway (see `api/src/lib/auth.ts`).
+- Display-name changes are rate limited to one per hour per account.
+- All input is validated server-side (the client checks are UX only): display names are `[a-zA-Z0-9 ]`, 1 to 20 chars, profanity-filtered via `shared/profanity.ts` against a public word list; user ids must be v4 UUIDs; `game_id` must be in the whitelist in `api/src/lib/validate.ts` (update it when adding a game); points and times are bounds-checked.
 - All DB access uses bound parameters (no string-built SQL).
 - CORS is locked to the production origin and `localhost:3000`; the worker never returns stack traces (`app.onError`).
 - `public/_headers` sets CSP, `X-Frame-Options`, `nosniff`, and referrer policy on the static site; display names render through React escaping, so stored XSS is blocked twice (charset whitelist + escaping).
 - No cookies, no analytics and no third-party scripts are served. Progress and the theme live in
   `localStorage`; only a random id, a chosen display name and per-game times/points reach the server.
-- A player's UUID is the only credential (no accounts): it is unguessable but anyone holding it can rename that player or submit their scores, and scores are client-computed, so the leaderboard is tamper-resistant, not tamper-proof. For abuse, add a Cloudflare WAF rate-limiting rule on `api.minigames.cpwillis.dev/*` (eg 20 req/min per IP on POST/PUT).
+- Scores are still computed in the browser, so a determined player can submit a score they did not
+  earn for **their own** account. They can no longer touch anyone else's. Treat the leaderboard as
+  decorative. For volume abuse, add a Cloudflare WAF rate-limiting rule on
+  `api.minigames.cpwillis.dev/*` (eg 20 req/min per IP on POST/PUT).
+
+## Shared code
+
+`shared/` holds what both deployables need: display-name validation and the profanity filter.
+The word list is the English list from
+[LDNOOBW](https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words),
+CC-BY-4.0, © Shutterstock, vendored with its licence and attributed in `shared/NOTICE.md`.
+`shared/profanity-words.ts` is generated: run `node scripts/build-profanity.mjs` after changing
+the list, never edit it by hand.
 
 ## Adding a game
 

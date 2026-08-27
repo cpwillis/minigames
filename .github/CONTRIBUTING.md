@@ -41,8 +41,8 @@ export default function YourGame({ onComplete }: { onComplete: () => void }) {
 ```
 
 2. Add the id to `src/features/games/game-ids.ts` (the single source of truth for ids and static
-   routes) and to the `GAME_IDS` set in `api/src/lib/validate.ts` (a separate deployable, so it
-   cannot import from the frontend). The worker rejects scores for unknown ids.
+   routes) and to the `GAME_IDS` set in `api/src/lib/validate.ts`. The worker rejects scores for
+   unknown ids.
 
 3. Open `src/features/games/registry.ts` and add your import + one entry to the `GAMES` array.
 
@@ -50,6 +50,13 @@ export default function YourGame({ onComplete }: { onComplete: () => void }) {
 
 5. Run `npm run build` and `npm test`. Mismatches between the registry and `game-ids.ts` fail the
    build in both directions.
+
+## Database changes
+
+Schema changes go in `api/migrations/` as a new numbered file. Never edit a migration that has
+already been applied, and rehearse against local D1 (`cd api && npm run db:migrate:local`) with
+representative data before anything touches production. Both new tables and new columns need
+`created_at` and `updated_at`.
 
 ## Game requirements
 

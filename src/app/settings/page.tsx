@@ -97,8 +97,8 @@ export default function SettingsPage() {
             <p className="text-xs text-muted">Player ID</p>
             <p className="break-all font-mono text-xs text-faint">{user.id}</p>
             <p className="text-xs text-faint">
-              A random identifier held in this browser. It is the only thing linking you to your
-              scores, so clearing site data starts you over.
+              A random identifier held in this browser, alongside a secret that proves you own it.
+              Clearing site data destroys both, and starts you over.
             </p>
           </div>
         )}
@@ -134,7 +134,7 @@ export default function SettingsPage() {
       <Section title="Data">
         <p className="text-sm leading-relaxed text-muted">
           No cookies, no analytics, no tracking. If you saved a display name, it is stored on the
-          server alongside your times and points, and nothing else.{' '}
+          server alongside your times, points and a record of each run, and nothing else.{' '}
           <Link href="/legal" className="underline underline-offset-2 hover:text-fg">
             Terms &amp; Privacy
           </Link>

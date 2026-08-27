@@ -138,12 +138,22 @@ export default function LegalPage() {
           <li>your game progress: best time and points per game</li>
           <li>your light/dark theme preference</li>
           <li>a random identifier and the display name you chose, if you chose one</li>
+          <li>
+            a random secret that proves this browser owns that identifier. It is never displayed
+            and is sent only to this site&rsquo;s own API; the server keeps only a one-way hash of
+            it, so it cannot be recovered from the database.
+          </li>
         </ul>
         <p>
           Stored on the server, only if you enter a display name and complete a game: that random
-          identifier, the display name you typed, and your per-game times and points. That is
-          everything. No email address, no password, no IP log kept by the application, no
-          fingerprinting.
+          identifier, the display name you typed, your best time and points per game, and a record
+          of each individual run (game, time, points, when). That is everything. No email address,
+          no password, no IP log kept by the application, no fingerprinting.
+        </p>
+        <p>
+          The secret lives only in this browser. Clearing site data destroys it, and with it any
+          way to prove those scores are yours: they stay on the leaderboard under that display
+          name, but you will start again with a new identifier.
         </p>
         <p>
           The display name is the only field you control, so do not put anything personal in it. It
