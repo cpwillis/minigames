@@ -1,7 +1,8 @@
 'use client'
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback } from 'react'
 import { api, ApiError } from '@/lib/api'
-import { validateUsername } from '@/lib/username'
+import { validateUsername } from '@/lib/username.ts'
+import { useStored, writeStored } from '@/lib/store'
 
 export interface User {
   id: string
@@ -9,20 +10,10 @@ export interface User {
 }
 
 const KEY = 'minigames-user'
-
-function save(user: User) {
-  localStorage.setItem(KEY, JSON.stringify(user))
-}
+const NO_USER = null
 
 export function useUser() {
-  const [user, setUser] = useState<User | null>(null)
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(KEY)
-      if (stored) setUser(JSON.parse(stored))
-    } catch {}
-  }, [])
+  const user = useStored<User | null>(KEY, NO_USER)
 
   const register = useCallback(async (
     displayName: string,
@@ -34,19 +25,15 @@ export function useUser() {
     try {
       await api.registerUser(id, result.value)
     } catch {
-      // API unreachable — still persist locally
+      // API unreachable — still persist locally so play is never blocked on the network.
     }
-    const newUser: User = { id, displayName: result.value }
-    save(newUser)
-    setUser(newUser)
+    writeStored<User>(KEY, { id, displayName: result.value })
     return { ok: true }
   }, [])
 
   const registerAnonymous = useCallback(() => {
     const id = crypto.randomUUID()
-    const newUser: User = { id, displayName: 'Anonymous' }
-    save(newUser)
-    setUser(newUser)
+    writeStored<User>(KEY, { id, displayName: 'Anonymous' })
     return id
   }, [])
 
@@ -61,7 +48,7 @@ export function useUser() {
       await api.updateName(user.id, result.value)
     } catch (err) {
       if (err instanceof ApiError && err.status === 404) {
-        // User was saved locally while the API was down, register them now instead
+        // Saved locally while the API was down; register the id now instead of renaming.
         try {
           await api.registerUser(user.id, result.value)
         } catch {
@@ -73,9 +60,7 @@ export function useUser() {
         return { ok: false, error: 'Could not reach server. Try again.' }
       }
     }
-    const updated: User = { ...user, displayName: result.value }
-    save(updated)
-    setUser(updated)
+    writeStored<User>(KEY, { ...user, displayName: result.value })
     return { ok: true }
   }, [user])
 

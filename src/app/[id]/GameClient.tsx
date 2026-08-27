@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { notFound } from 'next/navigation'
 import { GAMES } from '@/features/games/registry'
 import { useProgress } from '@/hooks/useProgress'
@@ -21,6 +21,11 @@ export default function GameClient({ id }: { id: string }) {
   const { user, isRegistered } = useUser()
   const [result, setResult] = useState<{ elapsed: number; points: number; previous: GameRecord | null } | null>(null)
   const [showUsernameDialog, setShowUsernameDialog] = useState(false)
+  // Every game seeds itself with Math.random() during render, so the prerendered HTML never
+  // matched the client's first paint and React threw a hydration error on all fifteen. Gate
+  // the render here, once, rather than reworking each game's state initialiser.
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
 
   const handleComplete = () => {
     const finalTime = stop()
@@ -44,7 +49,9 @@ export default function GameClient({ id }: { id: string }) {
     <div className="-mx-4 -mt-8">
       <GameHeader game={game} elapsed={elapsed} onRestart={handleRestart} />
       <div className="px-4 py-8">
-        <GameComponent key={restartKey} onComplete={handleComplete} />
+        {mounted
+          ? <GameComponent key={restartKey} onComplete={handleComplete} />
+          : <div className="h-72" aria-busy="true" aria-label="Loading game" />}
       </div>
       {showUsernameDialog && (
         <UsernameDialog onClose={() => setShowUsernameDialog(false)} />
