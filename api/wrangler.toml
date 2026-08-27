@@ -9,21 +9,22 @@ routes = [
   { pattern = "api.minigames.cpwillis.dev", custom_domain = true }
 ]
 
-# Persist logs in the dashboard (Workers & Pages -> minigames-api -> Logs), mirrors the dashboard
+# This file is the source of truth: the dashboard inherits whatever is set here on deploy.
+# `enabled` is the master switch for observability. It was false while [observability.logs]
+# said enabled = true, which meant no logs were persisted at all and the console.error in
+# app.onError went nowhere. Logs land in Workers & Pages -> minigames-api -> Logs.
 [observability]
-enabled = false
+enabled = true
 head_sampling_rate = 1
 
 [observability.logs]
 enabled = true
-head_sampling_rate = 1
-persist = true
 invocation_logs = true
 
+# Traces cost extra and this worker has four routes; logs are enough. Flip enabled to turn on,
+# and set head_sampling_rate well below 1 if traffic ever justifies it.
 [observability.traces]
 enabled = false
-persist = true
-head_sampling_rate = 1
 
 [[d1_databases]]
 binding = "DB"

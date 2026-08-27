@@ -105,8 +105,13 @@ export default function LegalPage() {
           by law, and in any event to the total amount you have paid to use the site, which is zero.
         </p>
         <p>
-          Nothing in these terms excludes, restricts or modifies any right or remedy you have under
-          applicable law that cannot lawfully be excluded, restricted or modified.
+          Nothing in these terms excludes, restricts or modifies any consumer guarantee, right or
+          remedy under the Australian Consumer Law (Schedule 2 to the{' '}
+          <em>Competition and Consumer Act 2010</em> (Cth)) or any other law, to the extent it
+          cannot lawfully be excluded, restricted or modified. Where the Australian Consumer Law
+          applies and permits it, the operator&rsquo;s liability for a failure to comply with a
+          consumer guarantee is limited to resupplying the service, which here means making the
+          site available again, or not, at the operator&rsquo;s option.
         </p>
       </Section>
 
@@ -173,6 +178,24 @@ export default function LegalPage() {
         <p>
           These terms may change at any time without notice. The version published here is the
           version that applies. Continued use after a change means you accept it.
+        </p>
+      </Section>
+
+      <Section id="governing-law" title="10. Governing law">
+        <p>
+          These terms, and any dispute or claim arising out of or in connection with them or your
+          use of the site, are governed by the laws of Australia and, where a State or Territory
+          law applies, by the law of the State or Territory in which the operator is ordinarily
+          resident.
+        </p>
+        <p>
+          You submit to the non-exclusive jurisdiction of the courts of Australia and the courts
+          able to hear appeals from them. Non-exclusive means neither party is prevented from
+          bringing proceedings in another court that properly has jurisdiction.
+        </p>
+        <p>
+          If any part of these terms is found to be unenforceable, it is severed and the rest
+          continues to apply.
         </p>
       </Section>
 
