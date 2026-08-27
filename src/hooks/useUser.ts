@@ -31,13 +31,25 @@ function newSecret(): string {
  * localStorage: the first thing a new player finished was never on the leaderboard. Registering
  * now backfills them. Best-effort, one failure must not lose the rest.
  */
-async function backfillScores(user: User) {
+export async function backfillScores(user: User) {
   const progress = readStored<Record<string, GameRecord>>(PROGRESS_KEY, {})
   await Promise.allSettled(
     Object.entries(progress).map(([gameId, record]) =>
       api.submitScore(user.id, gameId, record.bestTime, record.bestPoints, user.secret),
     ),
   )
+}
+
+/**
+ * Re-create a server row for an id this browser still holds but the server has forgotten, which
+ * happens if the database is reset or the player skipped registration while the API was down.
+ *
+ * The backfill sends everything in localStorage, so whatever prompted this recovery is included
+ * and the player's whole history is restored, not just the run that hit the 404.
+ */
+export async function reregister(user: User) {
+  await api.registerUser(user.id, user.displayName, user.secret)
+  await backfillScores(user)
 }
 
 export function useUser() {
@@ -85,10 +97,8 @@ export function useUser() {
       if (err instanceof ApiError && err.status === 404) {
         // Saved locally while the API was down, or skipped past the name prompt: register the id
         // now instead of renaming, and bring any scores earned in the meantime with it.
-        const claimed: User = { ...user, displayName: result.value, anonymous: false }
         try {
-          await api.registerUser(claimed.id, claimed.displayName, claimed.secret)
-          await backfillScores(claimed)
+          await reregister({ ...user, displayName: result.value, anonymous: false })
         } catch {
           return { ok: false, error: 'Could not reach server. Try again.' }
         }

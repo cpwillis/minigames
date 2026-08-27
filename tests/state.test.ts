@@ -200,3 +200,107 @@ describe('Settings', () => {
     assert.equal(localStorage.getItem('theme'), 'system')
   })
 })
+
+describe('recovering from a wiped server row', () => {
+  let useProgressMod: any, User: any
+
+  before(async () => { useProgressMod = await load('../src/hooks/useProgress.ts') })
+
+  const USER = {
+    id: '33333333-3333-4333-8333-333333333333',
+    displayName: 'Returning Player',
+    secret: 'z'.repeat(43),
+  }
+
+  /** Records every call and answers /scores with 404 until the user has been registered. */
+  function stubApi() {
+    const calls: { method: string; path: string; body: any }[] = []
+    let registered = false
+    const realFetch = globalThis.fetch
+    globalThis.fetch = (async (url: any, init: any = {}) => {
+      const path = new URL(String(url), 'http://x').pathname
+      const body = init.body ? JSON.parse(init.body) : null
+      calls.push({ method: init.method ?? 'GET', path, body })
+      if (path === '/users' && init.method === 'POST') {
+        registered = true
+        return new Response(JSON.stringify({ ok: true }), { status: 200 })
+      }
+      if (path === '/scores' && !registered) {
+        return new Response(JSON.stringify({ error: 'User not found' }), { status: 404 })
+      }
+      return new Response(JSON.stringify({ ok: true }), { status: 200 })
+    }) as typeof fetch
+    return { calls, restore: () => { globalThis.fetch = realFetch } }
+  }
+
+  // Regression: a 404 was swallowed, so after a database reset a player kept playing happily
+  // while silently vanishing from the leaderboard.
+  test('a 404 on submit re-registers and pushes everything back', async () => {
+    const { calls, restore } = stubApi()
+    try {
+      localStorage.setItem('minigames-progress', JSON.stringify({
+        'hangman': { bestTime: 20, bestPoints: 600 },
+      }))
+      window.dispatchEvent(new StorageEvent('storage', { key: null }))
+
+      const { renderHook } = await import('@testing-library/react')
+      const { result } = renderHook(() => useProgressMod.useProgress())
+
+      await act(async () => {
+        result.current.submitResult('big-o', 12, 880, USER)
+        await new Promise(r => setTimeout(r, 100))
+      })
+
+      const paths = calls.map(c => `${c.method} ${c.path}`)
+      assert.ok(paths.includes('POST /scores'), 'should try to submit first')
+      assert.ok(paths.includes('POST /users'), 'a 404 should trigger re-registration')
+
+      // The backfill must carry the whole of localStorage, not just the run that 404'd.
+      const submitted = calls.filter(c => c.path === '/scores' && c.method === 'POST').map(c => c.body.game_id)
+      assert.ok(submitted.includes('big-o'), 'the run that failed should be resent')
+      assert.ok(submitted.includes('hangman'), 'earlier progress should be restored too')
+    } finally {
+      restore()
+    }
+  })
+
+  test('a successful submit does not re-register', async () => {
+    const calls: any[] = []
+    const realFetch = globalThis.fetch
+    globalThis.fetch = (async (url: any, init: any = {}) => {
+      calls.push(`${init.method ?? 'GET'} ${new URL(String(url), 'http://x').pathname}`)
+      return new Response(JSON.stringify({ ok: true }), { status: 200 })
+    }) as typeof fetch
+    try {
+      const { renderHook } = await import('@testing-library/react')
+      const { result } = renderHook(() => useProgressMod.useProgress())
+      await act(async () => {
+        result.current.submitResult('big-o', 12, 880, USER)
+        await new Promise(r => setTimeout(r, 100))
+      })
+      assert.ok(!calls.includes('POST /users'), 'nothing to recover from, so no registration')
+    } finally {
+      globalThis.fetch = realFetch
+    }
+  })
+
+  test('other errors are still swallowed, not retried forever', async () => {
+    const calls: any[] = []
+    const realFetch = globalThis.fetch
+    globalThis.fetch = (async (url: any, init: any = {}) => {
+      calls.push(`${init.method ?? 'GET'} ${new URL(String(url), 'http://x').pathname}`)
+      return new Response(JSON.stringify({ error: 'Internal error' }), { status: 500 })
+    }) as typeof fetch
+    try {
+      const { renderHook } = await import('@testing-library/react')
+      const { result } = renderHook(() => useProgressMod.useProgress())
+      await act(async () => {
+        result.current.submitResult('big-o', 12, 880, USER)
+        await new Promise(r => setTimeout(r, 100))
+      })
+      assert.ok(!calls.includes('POST /users'), 'a 500 is not a missing row')
+    } finally {
+      globalThis.fetch = realFetch
+    }
+  })
+})

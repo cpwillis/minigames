@@ -1,6 +1,7 @@
 'use client'
 import { useCallback } from 'react'
-import { api } from '@/lib/api'
+import { api, ApiError } from '@/lib/api'
+import { reregister, type User } from '@/hooks/useUser'
 import { useStored, readStored, writeStored, clearStored } from '@/lib/store'
 import type { GameRecord } from '@/features/games/types'
 
@@ -15,7 +16,7 @@ export function useProgress() {
     id: string,
     elapsedSeconds: number,
     points: number,
-    user?: { id: string; secret: string },
+    user?: User,
   ) => {
     const current = readStored<Progress>(KEY, EMPTY)
     const existing = current[id]
@@ -23,7 +24,14 @@ export function useProgress() {
       writeStored<Progress>(KEY, { ...current, [id]: { bestTime: elapsedSeconds, bestPoints: points } })
     }
     // Fire and forget: the leaderboard is a nicety, a failed submit must not break the game.
-    if (user) api.submitScore(user.id, id, elapsedSeconds, points, user.secret).catch(() => {})
+    if (user) {
+      api.submitScore(user.id, id, elapsedSeconds, points, user.secret).catch(err => {
+        // 404 means the server has no row for this id, so the player had silently stopped
+        // appearing on the leaderboard while still playing happily. Rebuild the row; the
+        // backfill includes the run written to localStorage just above.
+        if (err instanceof ApiError && err.status === 404) reregister(user).catch(() => {})
+      })
+    }
   }, [])
 
   const resetProgress = useCallback(() => clearStored(KEY), [])
