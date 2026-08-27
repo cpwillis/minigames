@@ -4,8 +4,8 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { calcPoints } from './scoring.ts'
 import { formatTime } from './utils.ts'
-import { validateUsername } from './username.ts'
-import { containsProfanity } from './profanity.ts'
+import { validateUsername } from '../../shared/username.ts'
+import { containsProfanity } from '../../shared/profanity.ts'
 
 test('points decay with time and never fall below the 10% floor', () => {
   assert.equal(calcPoints(1000, 0), 1000)
@@ -37,26 +37,42 @@ test('profanity filter sees through spacing and leetspeak', () => {
   assert.equal(containsProfanity('sh1t'), true)
   assert.equal(containsProfanity('F u C k'), true)
   assert.equal(containsProfanity('ass'), true)
-  // WORD entries only match standalone, or every Bass and Classic player gets blocked
-  assert.equal(containsProfanity('Bass Player'), false)
-  assert.equal(containsProfanity('Cassandra'), false)
-  assert.equal(containsProfanity('Ada Lovelace'), false)
+  assert.equal(containsProfanity('xXfuckXx'), true)
+  assert.equal(containsProfanity('a55hole'), true)
+})
+
+test('multi-word entries from the list are matched as phrases', () => {
+  assert.equal(containsProfanity('alabama hot pocket'), true)
+  assert.equal(containsProfanity('hot pocket'), false)
+})
+
+// The whole reason the generator computes a substring-safe subset instead of matching the
+// full list anywhere: these are ordinary words and names that a naive filter destroys.
+test('innocent names and words are not blocked', () => {
+  for (const ok of [
+    'Bass Player', 'Cassandra', 'Ada Lovelace', 'Grace Hopper', 'Classic',
+    'Swanky', 'Ashkenazi', 'Sweetwater', 'Advertisement', 'Amusement',
+    'Titan', 'Analyst', 'Scunthorpe', 'Penistone', 'Assam', 'Cockburn',
+    'Sussex', 'Middlesex', 'Essex', 'Nigeria', 'Manuscript',
+  ]) {
+    assert.equal(containsProfanity(ok), false, `should allow ${JSON.stringify(ok)}`)
+  }
+})
+
+// FORCE_SUBSTRING in the generator may only promote words already on the public list.
+test('slurs are blocked even when embedded', () => {
+  for (const bad of ['xxshitxx', 'n1gg3r', 'MyCuntName', 'sluttyname']) {
+    assert.equal(containsProfanity(bad), true, `should block ${JSON.stringify(bad)}`)
+  }
+})
+
+// An allowlisted place name must not become a way to smuggle the term it excuses.
+test('allowlisted names do not launder a slur next to them', () => {
+  assert.equal(containsProfanity('Scunthorpe cunt'), true)
+  assert.equal(containsProfanity('Scunthorpe FC'), false)
 })
 
 test('profanity is enforced through validateUsername, not just exported', () => {
   assert.equal(validateUsername('sh1t').ok, false)
 })
 
-// The worker keeps its own copy of the filter (separate deployable, cannot import from here) and
-// it is the actual enforcement point. If the two ever disagree, the client's preview of what will
-// be accepted stops matching what the server does.
-test('the worker copy of the profanity filter agrees with this one', async () => {
-  const { containsProfanity: server } = await import('../../api/src/lib/profanity.ts')
-  const cases = [
-    'sh1t', 'F u C k', 'ass', 'Bass Player', 'Cassandra', 'Ada Lovelace',
-    'fag', 'Flagstaff', 'n1gg3r', 'Titan', 'tit', 'Grace Hopper', 'a55',
-  ]
-  for (const c of cases) {
-    assert.equal(server(c), containsProfanity(c), `disagreement on ${JSON.stringify(c)}`)
-  }
-})

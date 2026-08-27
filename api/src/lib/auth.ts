@@ -1,5 +1,5 @@
 import type { Context } from 'hono'
-import { isSecret, hashSecret, timingSafeEqual } from './secret'
+import { isSecret, hashSecret, timingSafeEqual } from './secret.ts'
 
 // Request-level auth.
 //

@@ -1,7 +1,7 @@
 'use client'
 import { useCallback } from 'react'
 import { api, ApiError } from '@/lib/api'
-import { validateUsername } from '@/lib/username.ts'
+import { validateUsername } from '@shared/username.ts'
 import { useStored, readStored, writeStored } from '@/lib/store'
 import type { GameRecord } from '@/features/games/types'
 

@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { validateUsername } from '../lib/username'
+import { validateUsername } from '../../../shared/username.ts'
 import { isUuid, readJson } from '../lib/validate'
 import { authenticate, hashSecret, isSecret, type Env } from '../lib/auth'
 

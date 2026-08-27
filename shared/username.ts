@@ -1,6 +1,6 @@
 import { containsProfanity } from './profanity.ts'
 
-// English alphanumeric + internal spaces, 1–20 chars, no leading/trailing spaces
+// English alphanumeric with internal spaces, 1-20 chars, no leading or trailing space.
 const RE = /^[a-zA-Z0-9][a-zA-Z0-9 ]{0,18}[a-zA-Z0-9]$|^[a-zA-Z0-9]{1,2}$/
 
 export type ValidationResult =
