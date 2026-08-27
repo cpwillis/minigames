@@ -38,8 +38,8 @@ export default function LegalPage() {
       <Section id="terms" title="1. Terms of use">
         <p>
           By using minigames (the &ldquo;site&rdquo;) you accept these terms. If you do not accept
-          them, do not use the site. The site is operated by an individual (&ldquo;the
-          operator&rdquo;) as an unpaid personal project.
+          them, do not use the site. The site is operated from Australia by an individual
+          (&ldquo;the operator&rdquo;) as an unpaid personal project, in their own time.
         </p>
         <p>
           The site is free. There is no account, no subscription, no payment and nothing is sold to
@@ -183,15 +183,15 @@ export default function LegalPage() {
 
       <Section id="governing-law" title="10. Governing law">
         <p>
-          These terms, and any dispute or claim arising out of or in connection with them or your
-          use of the site, are governed by the laws of Australia and, where a State or Territory
-          law applies, by the law of the State or Territory in which the operator is ordinarily
-          resident.
+          The operator is based in Australia and builds this in their own time, which is the whole
+          reason there is no support and no promise it stays online. These terms, and any dispute
+          or claim arising out of or in connection with them or your use of the site, are governed
+          by the laws of Australia.
         </p>
         <p>
-          You submit to the non-exclusive jurisdiction of the courts of Australia and the courts
-          able to hear appeals from them. Non-exclusive means neither party is prevented from
-          bringing proceedings in another court that properly has jurisdiction.
+          You submit to the non-exclusive jurisdiction of the Australian courts. Non-exclusive means
+          neither party is prevented from bringing proceedings in another court that properly has
+          jurisdiction.
         </p>
         <p>
           If any part of these terms is found to be unenforceable, it is severed and the rest
