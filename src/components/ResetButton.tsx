@@ -6,32 +6,26 @@ export default function ResetButton() {
   const { resetProgress } = useProgress()
   const [confirming, setConfirming] = useState(false)
 
-  if (confirming) {
+  if (!confirming) {
     return (
-      <div className="flex items-center gap-3">
-        <span className="text-sm text-gray-600 dark:text-gray-400">Are you sure? This cannot be undone.</span>
-        <button
-          onClick={() => { resetProgress(); setConfirming(false) }}
-          className="text-sm font-medium text-red-500 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-        >
-          Reset
-        </button>
-        <button
-          onClick={() => setConfirming(false)}
-          className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-        >
-          Cancel
-        </button>
-      </div>
+      <button onClick={() => setConfirming(true)} className="btn text-muted hover:text-bad">
+        Reset progress
+      </button>
     )
   }
 
   return (
-    <button
-      onClick={() => setConfirming(true)}
-      className="text-sm text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
-    >
-      Reset progress
-    </button>
+    <div className="flex flex-wrap items-center gap-3 rounded-lg border border-bad/30 bg-bad-soft/40 p-3">
+      <span className="text-sm text-fg">Erase all local progress? This cannot be undone.</span>
+      <button
+        onClick={() => { resetProgress(); setConfirming(false) }}
+        className="text-sm font-medium text-bad transition-opacity hover:opacity-80"
+      >
+        Reset
+      </button>
+      <button onClick={() => setConfirming(false)} className="text-sm text-muted transition-colors hover:text-fg">
+        Cancel
+      </button>
+    </div>
   )
 }

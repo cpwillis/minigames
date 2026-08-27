@@ -46,7 +46,7 @@ export default function GameClient({ id }: { id: string }) {
   const GameComponent = game.component
 
   return (
-    <div className="-mx-4 -mt-8">
+    <div className="-mx-4 -mt-10">
       <GameHeader game={game} elapsed={elapsed} onRestart={handleRestart} />
       <div className="px-4 py-8">
         {mounted

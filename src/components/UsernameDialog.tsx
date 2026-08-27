@@ -1,27 +1,22 @@
 'use client'
 import { useState } from 'react'
+import Link from 'next/link'
 import { useUser } from '@/hooks/useUser'
 
-interface UsernameDialogProps {
-  onClose: () => void
-}
-
-export default function UsernameDialog({ onClose }: UsernameDialogProps) {
+export default function UsernameDialog({ onClose }: { onClose: () => void }) {
   const { register, registerAnonymous } = useUser()
   const [name, setName] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
   const save = async () => {
+    if (loading) return
     setLoading(true)
     setError('')
     const result = await register(name)
     setLoading(false)
-    if (result.ok) {
-      onClose()
-    } else {
-      setError(result.error ?? 'Invalid name')
-    }
+    if (result.ok) onClose()
+    else setError(result.error ?? 'Invalid name')
   }
 
   const skip = () => {
@@ -30,11 +25,20 @@ export default function UsernameDialog({ onClose }: UsernameDialogProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-xl p-8 w-full max-w-sm space-y-5">
-        <div>
-          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1">Choose a display name</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">This appears on the leaderboard.</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="name-title"
+        className="card w-full max-w-sm space-y-5 p-8 shadow-xl"
+      >
+        <div className="space-y-1">
+          <h2 id="name-title" className="text-base font-semibold text-fg">
+            Choose a display name
+          </h2>
+          <p className="text-sm text-muted">
+            This shows publicly on the leaderboard. Don&apos;t use anything personal.
+          </p>
         </div>
 
         <div className="space-y-2">
@@ -46,30 +50,40 @@ export default function UsernameDialog({ onClose }: UsernameDialogProps) {
               onKeyDown={e => e.key === 'Enter' && save()}
               maxLength={20}
               placeholder="your name"
-              className="flex-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 outline-none focus:border-green-500"
+              aria-label="Display name"
+              aria-invalid={!!error}
+              aria-describedby="name-help"
+              className="field"
               autoFocus
             />
-            <span className="text-xs text-gray-400 dark:text-gray-600 tabular-nums w-8 text-right">{name.length}/20</span>
+            <span className="w-9 shrink-0 text-right text-xs tabular-nums text-faint">
+              {name.length}/20
+            </span>
           </div>
-          {error && <p className="text-xs text-red-500">{error}</p>}
-          <p className="text-xs text-gray-400 dark:text-gray-600">Letters, numbers, and spaces only (1&ndash;20 chars)</p>
+          {error && (
+            <p role="alert" className="text-xs text-bad">{error}</p>
+          )}
+          <p id="name-help" className="text-xs text-faint">
+            Letters, numbers and spaces only (1&ndash;20 characters).
+          </p>
         </div>
 
         <div className="flex gap-3">
-          <button
-            onClick={skip}
-            className="flex-1 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-          >
-            Skip for now
+          <button onClick={skip} className="btn flex-1 text-muted">
+            Skip
           </button>
-          <button
-            onClick={save}
-            disabled={loading || !name.trim()}
-            className="flex-1 rounded-lg border border-gray-900 dark:border-gray-100 bg-gray-900 dark:bg-gray-100 px-4 py-2 text-sm font-medium text-white dark:text-gray-900 hover:opacity-90 disabled:opacity-50 transition-opacity"
-          >
-            {loading ? 'Saving...' : 'Save name'}
+          <button onClick={save} disabled={loading || !name.trim()} className="btn-primary flex-1">
+            {loading ? 'Saving…' : 'Save name'}
           </button>
         </div>
+
+        <p className="text-xs text-faint">
+          Saving a name stores it with your scores.{' '}
+          <Link href="/legal" className="underline underline-offset-2 hover:text-muted">
+            What gets stored
+          </Link>
+          .
+        </p>
       </div>
     </div>
   )

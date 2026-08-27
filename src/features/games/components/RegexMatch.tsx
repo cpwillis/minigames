@@ -93,17 +93,17 @@ export default function RegexMatch({ onComplete }: { onComplete: () => void }) {
 
   return (
     <div className="space-y-5 max-w-md">
-      <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+      <div className="flex items-center justify-between text-sm text-muted">
         <span>Round {round + 1} / {rounds.length}</span>
         <span>{score} correct</span>
       </div>
 
-      <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-4">
-        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Pattern</p>
-        <p className="font-mono text-base text-gray-900 dark:text-gray-100">/{current.pattern}/</p>
+      <div className="rounded-lg border border-line bg-sunken p-4">
+        <p className="text-xs text-muted mb-1">Pattern</p>
+        <p className="font-mono text-base text-fg">/{current.pattern}/</p>
       </div>
 
-      <p className="text-sm text-gray-600 dark:text-gray-400">Select all strings that match:</p>
+      <p className="text-sm text-muted">Select all strings that match:</p>
 
       <div className="space-y-2">
         {current.strings.map((s, i) => {
@@ -112,17 +112,17 @@ export default function RegexMatch({ onComplete }: { onComplete: () => void }) {
           if (submitted) {
             if (isMatch) {
               cls += checked.has(i)
-                ? ' border-green-500 bg-[var(--game-correct-bg)]'
-                : ' border-green-400 bg-[var(--game-correct-bg)] opacity-60'
+                ? ' border-accent bg-ok-soft'
+                : ' border-accent bg-ok-soft opacity-60'
             } else {
               cls += checked.has(i)
-                ? ' border-red-400 bg-[var(--game-wrong-bg)]'
-                : ' border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900'
+                ? ' border-bad bg-bad-soft'
+                : ' border-line bg-surface'
             }
           } else {
             cls += checked.has(i)
-              ? ' border-green-500 bg-[var(--game-correct-bg)]'
-              : ' border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500'
+              ? ' border-accent bg-ok-soft'
+              : ' border-line bg-surface hover:border-line-strong'
           }
           return (
             <label key={i} className={cls}>
@@ -131,9 +131,9 @@ export default function RegexMatch({ onComplete }: { onComplete: () => void }) {
                 checked={checked.has(i)}
                 onChange={() => toggle(i)}
                 disabled={submitted}
-                className="accent-green-500"
+                className="accent-[var(--c-accent)]"
               />
-              <span className="font-mono text-sm text-gray-900 dark:text-gray-100">{s}</span>
+              <span className="font-mono text-sm text-fg">{s}</span>
             </label>
           )
         })}
@@ -142,18 +142,18 @@ export default function RegexMatch({ onComplete }: { onComplete: () => void }) {
       {!submitted ? (
         <button
           onClick={submit}
-          className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+          className="btn"
         >
           Submit
         </button>
       ) : (
         <div className="space-y-2">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-muted">
             Matches: {[...correctSet].map(i => current.strings[i]).join(', ')}
           </p>
           <button
             onClick={next}
-            className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="btn"
           >
             {round + 1 >= rounds.length ? 'Finish' : 'Next'}
           </button>

@@ -14,6 +14,10 @@
 }
 
 .ws-cell {
+  appearance: none;
+  padding: 0;
+  border: 0;
+  font: inherit;
   width: 2rem;
   height: 2rem;
   display: flex;
@@ -28,36 +32,23 @@
 }
 
 .ws-cell.anchor {
-  background: rgb(22 163 74 / 0.5);
-  color: rgb(21 128 61);
-}
-.dark .ws-cell.anchor {
-  background: rgb(21 128 61 / 0.6);
-  color: #4ade80;
+  background: var(--c-accent);
+  color: var(--c-on-accent);
 }
 
 .ws-cell.preview {
-  background: var(--game-preview-bg);
-  color: rgb(21 128 61);
-}
-.dark .ws-cell.preview {
-  color: #4ade80;
+  background: var(--c-accent-soft);
+  color: var(--c-accent);
 }
 
 .ws-cell.found {
-  background: var(--game-found-bg);
-  color: rgb(161 98 7);
-}
-.dark .ws-cell.found {
-  color: #fbbf24;
+  background: var(--c-warn-soft);
+  color: var(--c-warn);
 }
 
 .ws-cell.invalid {
-  background: var(--game-invalid-bg);
-  color: rgb(185 28 28);
-}
-.dark .ws-cell.invalid {
-  color: #ef4444;
+  background: var(--c-bad-soft);
+  color: var(--c-bad);
 }
 
 .ws-word-list {

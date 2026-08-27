@@ -11,27 +11,21 @@ interface GameHeaderProps {
 
 export default function GameHeader({ game, elapsed, onRestart }: GameHeaderProps) {
   return (
-    <div className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
-      <div className="max-w-4xl mx-auto px-4 h-12 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Link
-            href="/"
-            className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-          >
+    <div className="border-b border-line bg-sunken/60">
+      <div className="mx-auto flex h-12 max-w-4xl items-center justify-between gap-4 px-4">
+        <div className="flex min-w-0 items-center gap-2 text-xs">
+          <Link href="/" className="shrink-0 text-muted transition-colors hover:text-fg">
             &larr; Games
           </Link>
-          <span className="text-gray-300 dark:text-gray-700">/</span>
-          <span className="text-xs font-medium text-gray-900 dark:text-gray-100">{game.title}</span>
+          <span aria-hidden="true" className="text-faint">/</span>
+          <span className="truncate font-medium text-fg">{game.title}</span>
         </div>
 
-        <div className="flex items-center gap-3">
-          <span className="font-mono text-xs text-gray-500 dark:text-gray-400 tabular-nums">
+        <div className="flex shrink-0 items-center gap-3">
+          <span className="font-mono text-xs tabular-nums text-muted" aria-label="Elapsed time">
             {formatTime(elapsed)}
           </span>
-          <button
-            onClick={onRestart}
-            className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-          >
+          <button onClick={onRestart} className="text-xs text-muted transition-colors hover:text-fg">
             Restart
           </button>
         </div>

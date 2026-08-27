@@ -14,7 +14,7 @@ export default function ThemeToggle() {
     <button
       onClick={() => setTheme(next)}
       aria-label="Toggle theme"
-      className="w-7 h-7 flex items-center justify-center rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+      className="w-7 h-7 flex items-center justify-center rounded-md text-muted hover:text-fg hover:bg-sunken transition-colors"
     >
       {theme === 'dark' ? (
         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

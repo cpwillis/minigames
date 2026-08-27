@@ -44,19 +44,19 @@ export default function TypingSpeed({ onComplete }: { onComplete: () => void }) 
 
   return (
     <div className="space-y-5 max-w-lg">
-      <p className="text-sm text-gray-500 dark:text-gray-400">Type the snippet exactly:</p>
+      <p className="text-sm text-muted">Type the snippet exactly:</p>
 
-      <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-4 font-mono text-base leading-relaxed tracking-wide flex flex-wrap">
+      <div className="rounded-lg border border-line bg-sunken p-4 font-mono text-base leading-relaxed tracking-wide flex flex-wrap">
         {chars.map((ch, i) => {
           let cls = ''
           if (i < typed.length) {
             cls = typed[i] === ch
-              ? 'text-green-600 dark:text-green-400'
-              : 'text-red-500 bg-red-100 dark:bg-red-900/30 rounded'
+              ? 'text-accent'
+              : 'text-bad bg-bad-soft rounded'
           } else if (i === typed.length) {
-            cls = 'border-b-2 border-gray-900 dark:border-gray-100 text-gray-900 dark:text-gray-100'
+            cls = 'border-b-2 border-fg text-fg'
           } else {
-            cls = 'text-gray-400 dark:text-gray-600'
+            cls = 'text-faint'
           }
           return <span key={i} className={cls}>{ch}</span>
         })}
@@ -67,7 +67,7 @@ export default function TypingSpeed({ onComplete }: { onComplete: () => void }) 
         type="text"
         value={typed}
         onChange={handleChange}
-        className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm font-mono text-gray-900 dark:text-gray-100 outline-none focus:border-green-500"
+        className="field font-mono"
         placeholder="Start typing here..."
         spellCheck={false}
         autoCapitalize="none"
@@ -75,7 +75,7 @@ export default function TypingSpeed({ onComplete }: { onComplete: () => void }) 
         autoComplete="off"
       />
 
-      <p className="text-xs text-gray-400 dark:text-gray-600">
+      <p className="text-xs text-faint">
         {typed.length} / {target.current.length} characters
       </p>
     </div>

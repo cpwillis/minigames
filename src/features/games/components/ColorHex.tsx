@@ -66,21 +66,21 @@ export default function ColorHex({ onComplete }: { onComplete: () => void }) {
 
   return (
     <div className="space-y-5 max-w-xs">
-      <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+      <div className="flex items-center justify-between text-sm text-muted">
         <span>Round {round + 1} / {TOTAL_ROUNDS}</span>
         <span>{correct} correct</span>
       </div>
 
-      <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-5 text-center">
-        <p className="font-mono text-2xl font-bold text-gray-900 dark:text-gray-100">{target.hex}</p>
+      <div className="rounded-lg border border-line bg-sunken p-5 text-center">
+        <p className="font-mono text-2xl font-bold text-fg">{target.hex}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         {options.map(opt => {
           let ringCls = ''
           if (selected !== null) {
-            if (opt.hex === target.hex) ringCls = ' ring-2 ring-green-500'
-            else if (opt.hex === selected) ringCls = ' ring-2 ring-red-500 opacity-60'
+            if (opt.hex === target.hex) ringCls = ' ring-2 ring-accent'
+            else if (opt.hex === selected) ringCls = ' ring-2 ring-bad opacity-60'
           }
           return (
             <button

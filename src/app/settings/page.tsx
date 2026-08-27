@@ -1,14 +1,32 @@
 'use client'
 import { useState } from 'react'
+import Link from 'next/link'
 import { useTheme } from '@/components/ThemeProvider'
 import { useUser } from '@/hooks/useUser'
 import { useProgress } from '@/hooks/useProgress'
+import { GAMES } from '@/features/games/registry'
 import ResetButton from '@/components/ResetButton'
+
+function Section({ title, description, children }: {
+  title: string
+  description?: string
+  children: React.ReactNode
+}) {
+  return (
+    <section className="space-y-4">
+      <div className="space-y-1">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-fg">{title}</h2>
+        {description && <p className="text-xs text-muted">{description}</p>}
+      </div>
+      {children}
+    </section>
+  )
+}
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme()
   const { user, isRegistered, register, updateName } = useUser()
-  const { progress } = useProgress()
+  const { progress, totalPoints } = useProgress()
 
   const [name, setName] = useState(user?.displayName ?? '')
   const [nameError, setNameError] = useState('')
@@ -16,6 +34,7 @@ export default function SettingsPage() {
   const [nameLoading, setNameLoading] = useState(false)
 
   const saveName = async () => {
+    if (nameLoading) return
     setNameLoading(true)
     setNameError('')
     setNameSaved(false)
@@ -32,71 +51,88 @@ export default function SettingsPage() {
   const completed = Object.keys(progress).length
 
   return (
-    <div className="space-y-10 max-w-lg">
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Settings</h1>
-      </div>
+    <div className="max-w-lg space-y-10">
+      <h1 className="text-2xl font-semibold tracking-tight text-fg">Settings</h1>
 
-      <section className="space-y-4">
-        <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">Profile</h2>
-        <div className="space-y-3">
-          <div className="space-y-1">
-            <label className="text-xs text-gray-500 dark:text-gray-400">Display name</label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={name}
-                onChange={e => { setName(e.target.value); setNameError(''); setNameSaved(false) }}
-                onKeyDown={e => e.key === 'Enter' && saveName()}
-                maxLength={20}
-                placeholder="your name"
-                className="flex-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 outline-none focus:border-green-500"
-              />
-              <button
-                onClick={saveName}
-                disabled={nameLoading || !name.trim()}
-                className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 transition-colors"
-              >
-                {nameLoading ? 'Saving...' : nameSaved ? 'Saved!' : 'Save'}
-              </button>
-            </div>
-            {nameError && <p className="text-xs text-red-500">{nameError}</p>}
-            <p className="text-xs text-gray-400 dark:text-gray-600">Letters, numbers, and spaces only (1&ndash;20 chars)</p>
+      <Section title="Profile" description="Shown publicly on the leaderboard. Don't use anything personal.">
+        <div className="space-y-2">
+          <label htmlFor="display-name" className="block text-xs text-muted">
+            Display name
+          </label>
+          <div className="flex gap-2">
+            <input
+              id="display-name"
+              type="text"
+              value={name}
+              onChange={e => { setName(e.target.value); setNameError(''); setNameSaved(false) }}
+              onKeyDown={e => e.key === 'Enter' && saveName()}
+              maxLength={20}
+              placeholder="your name"
+              aria-invalid={!!nameError}
+              aria-describedby="display-name-help"
+              className="field"
+            />
+            <button onClick={saveName} disabled={nameLoading || !name.trim()} className="btn shrink-0">
+              {nameLoading ? 'Saving…' : nameSaved ? 'Saved' : 'Save'}
+            </button>
           </div>
-          {user?.id && (
-            <div className="space-y-1">
-              <label className="text-xs text-gray-500 dark:text-gray-400">Player ID</label>
-              <p className="font-mono text-xs text-gray-400 dark:text-gray-600 break-all">{user.id}</p>
-            </div>
+          {nameError && (
+            <p role="alert" className="text-xs text-bad">{nameError}</p>
           )}
+          <p id="display-name-help" className="text-xs text-faint">
+            Letters, numbers and spaces only (1&ndash;20 characters).
+          </p>
         </div>
-      </section>
 
-      <section className="space-y-4">
-        <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">Appearance</h2>
-        <div className="flex gap-2">
+        {user?.id && (
+          <div className="space-y-1">
+            <p className="text-xs text-muted">Player ID</p>
+            <p className="break-all font-mono text-xs text-faint">{user.id}</p>
+            <p className="text-xs text-faint">
+              A random identifier held in this browser. It is the only thing linking you to your
+              scores, so clearing site data starts you over.
+            </p>
+          </div>
+        )}
+      </Section>
+
+      <Section title="Appearance">
+        <div role="group" aria-label="Theme" className="flex gap-2">
           {(['light', 'dark', 'system'] as const).map(t => (
             <button
               key={t}
               onClick={() => setTheme(t)}
-              className={[
-                'flex-1 rounded-lg border px-3 py-2 text-sm capitalize transition-colors',
+              aria-pressed={theme === t}
+              className={`flex-1 rounded-lg border px-3 py-2 text-sm capitalize transition-colors ${
                 theme === t
-                  ? 'border-gray-900 dark:border-gray-100 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
-                  : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 hover:border-gray-400 dark:hover:border-gray-500',
-              ].join(' ')}
+                  ? 'border-transparent bg-fg text-bg'
+                  : 'border-line bg-surface text-fg hover:border-line-strong'
+              }`}
             >
               {t}
             </button>
           ))}
         </div>
-      </section>
+      </Section>
 
-      <section className="space-y-4">
-        <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">Progress</h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400">{completed} game{completed !== 1 ? 's' : ''} completed.</p>
+      <Section title="Progress" description="Stored in this browser only.">
+        <p className="text-sm text-muted">
+          <span className="font-medium text-fg">{completed}</span> of {GAMES.length} games completed
+          &middot; <span className="font-medium text-fg">{totalPoints.toLocaleString()}</span> points.
+        </p>
         <ResetButton />
-      </section>
+      </Section>
+
+      <Section title="Data">
+        <p className="text-sm leading-relaxed text-muted">
+          No cookies, no analytics, no tracking. If you saved a display name, it is stored on the
+          server alongside your times and points, and nothing else.{' '}
+          <Link href="/legal" className="underline underline-offset-2 hover:text-fg">
+            Terms &amp; Privacy
+          </Link>
+          .
+        </p>
+      </Section>
     </div>
   )
 }

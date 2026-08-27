@@ -134,45 +134,52 @@ export default function BugFinder({ onComplete }: { onComplete: () => void }) {
 
   return (
     <div className="space-y-4 max-w-lg">
-      <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+      <div className="flex items-center justify-between text-sm text-muted">
         <span>Round {round + 1} / {rounds.length}</span>
-        <span className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded">{current.language}</span>
+        <span className="font-mono text-xs bg-sunken px-2 py-0.5 rounded">{current.language}</span>
       </div>
 
-      <p className="text-sm text-gray-600 dark:text-gray-400">Click the line containing the bug:</p>
+      <p className="text-sm text-muted">Click the line containing the bug:</p>
 
-      <div className="rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden font-mono text-sm">
+      <div className="rounded-lg border border-line overflow-hidden font-mono text-sm">
         {current.lines.map((line, i) => {
-          let cls = 'flex gap-3 px-3 py-1 cursor-pointer transition-colors'
+          let cls = 'flex w-full gap-3 px-3 py-1 text-left transition-colors'
           if (answered) {
             if (i === current.bugLine) {
-              cls += ' bg-[var(--game-correct-bg)]'
+              cls += ' bg-ok-soft'
             } else if (i === selected) {
-              cls += ' bg-[var(--game-wrong-bg)]'
+              cls += ' bg-bad-soft'
             } else {
-              cls += ' bg-white dark:bg-gray-900'
+              cls += ' bg-surface'
             }
           } else {
-            cls += ' bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800'
+            cls += ' bg-surface hover:bg-sunken'
           }
           return (
-            <div key={i} className={cls} onClick={() => pick(i)}>
-              <span className="select-none w-5 text-right text-gray-400 dark:text-gray-600 shrink-0">{i + 1}</span>
-              <span className="text-gray-900 dark:text-gray-100 whitespace-pre">{line || ' '}</span>
-            </div>
+            <button
+              key={i}
+              type="button"
+              className={cls}
+              onClick={() => pick(i)}
+              disabled={answered}
+              aria-label={`Line ${i + 1}: ${line || 'blank'}`}
+            >
+              <span className="select-none w-5 text-right text-faint shrink-0">{i + 1}</span>
+              <span className="text-fg whitespace-pre">{line || ' '}</span>
+            </button>
           )
         })}
       </div>
 
       {answered && (
         <div className="space-y-3">
-          <p className={`text-sm font-medium ${isCorrect ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>
+          <p className={`text-sm font-medium ${isCorrect ? 'text-accent' : 'text-bad'}`}>
             {isCorrect ? 'Correct!' : `Wrong — bug was on line ${current.bugLine + 1}.`}
           </p>
-          <p className="text-sm text-gray-500 dark:text-gray-400">{current.explanation}</p>
+          <p className="text-sm text-muted">{current.explanation}</p>
           <button
             onClick={next}
-            className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="btn"
           >
             {round + 1 >= rounds.length ? 'Finish' : 'Next'}
           </button>

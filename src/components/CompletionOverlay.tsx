@@ -14,43 +14,47 @@ export default function CompletionOverlay({ elapsed, points, previous, onPlayAga
   const isNewBest = !previous || elapsed < previous.bestTime
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-xl p-8 w-full max-w-sm space-y-5">
-        <div className="text-center">
-          <p className="text-2xl mb-1">&#10003;</p>
-          <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">Complete!</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="complete-title"
+        className="card w-full max-w-sm space-y-6 p-8 shadow-xl"
+      >
+        <div className="space-y-2 text-center">
+          <span
+            aria-hidden="true"
+            className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-accent-soft text-lg text-accent"
+          >
+            &#10003;
+          </span>
+          <p id="complete-title" className="text-lg font-semibold text-fg">
+            {isNewBest ? 'New best!' : 'Complete'}
+          </p>
         </div>
 
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-500 dark:text-gray-400">Time</span>
-            <span className="font-mono font-medium text-gray-900 dark:text-gray-100">{formatTime(elapsed)}</span>
+        <dl className="space-y-2 text-sm">
+          <div className="flex items-center justify-between">
+            <dt className="text-muted">Time</dt>
+            <dd className="font-mono font-medium tabular-nums text-fg">{formatTime(elapsed)}</dd>
           </div>
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-500 dark:text-gray-400">Points</span>
-            <span className="font-mono font-medium text-gray-900 dark:text-gray-100">{points.toLocaleString()}</span>
+          <div className="flex items-center justify-between">
+            <dt className="text-muted">Points</dt>
+            <dd className="font-mono font-medium tabular-nums text-fg">{points.toLocaleString()}</dd>
           </div>
-          {isNewBest && (
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-amber-600 dark:text-amber-400 font-medium">New best!</span>
-              {previous && (
-                <span className="text-xs text-gray-400 dark:text-gray-600">prev {formatTime(previous.bestTime)}</span>
-              )}
+          {previous && (
+            <div className="flex items-center justify-between">
+              <dt className="text-muted">Previous best</dt>
+              <dd className="font-mono tabular-nums text-faint">{formatTime(previous.bestTime)}</dd>
             </div>
           )}
-        </div>
+        </dl>
 
         <div className="flex gap-3">
-          <button
-            onClick={onPlayAgain}
-            className="flex-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-          >
+          <button onClick={onPlayAgain} className="btn flex-1" autoFocus>
             Play again
           </button>
-          <Link
-            href="/"
-            className="flex-1 rounded-lg border border-gray-900 dark:border-gray-100 bg-gray-900 dark:bg-gray-100 px-4 py-2 text-sm font-medium text-white dark:text-gray-900 hover:opacity-90 transition-opacity text-center"
-          >
+          <Link href="/" className="btn-primary flex-1">
             Back home
           </Link>
         </div>

@@ -111,32 +111,35 @@ export default function WordSearch({ onComplete }: { onComplete: () => void }) {
     if (flashInvalid && previewSet.has(key)) return 'ws-cell invalid'
     if (previewSet.has(key)) return 'ws-cell preview'
     if (anchor && anchor[0] === r && anchor[1] === c) return 'ws-cell anchor'
-    return 'ws-cell bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-900 dark:text-gray-100'
+    return 'ws-cell bg-sunken hover:bg-line text-fg'
   }
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-sm text-muted">
         Click a start letter, then an end letter to select a word.
       </p>
       <div className="ws-layout">
         <div className="ws-grid" onMouseLeave={() => anchor && setHover(null)}>
           {grid.map((row, r) =>
             row.map((letter, c) => (
-              <div
+              <button
                 key={`${r}-${c}`}
+                type="button"
                 className={cellClass(r, c)}
                 onClick={() => handleClick(r, c)}
+                onFocus={() => anchor && setHover([r, c])}
                 onMouseEnter={() => anchor && setHover([r, c])}
+                aria-label={`Row ${r + 1} column ${c + 1}, letter ${letter}`}
               >
                 {letter}
-              </div>
+              </button>
             ))
           )}
         </div>
-        <ul className="ws-word-list text-gray-900 dark:text-gray-100">
+        <ul className="ws-word-list text-fg">
           {WORDS.map(w => (
-            <li key={w} className={`ws-word${found.has(w) ? ' found-word text-amber-600 dark:text-amber-400' : ''}`}>{w}</li>
+            <li key={w} className={`ws-word${found.has(w) ? ' found-word text-warn' : ''}`}>{w}</li>
           ))}
         </ul>
       </div>

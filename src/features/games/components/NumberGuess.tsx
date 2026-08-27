@@ -39,8 +39,8 @@ export default function NumberGuess({ onComplete }: { onComplete: () => void }) 
 
   return (
     <div className="space-y-5 max-w-sm">
-      <p className="text-sm text-gray-500 dark:text-gray-400">
-        I&apos;m thinking of a number between <strong className="text-gray-900 dark:text-gray-100">1</strong> and <strong className="text-gray-900 dark:text-gray-100">100</strong>.
+      <p className="text-sm text-muted">
+        I&apos;m thinking of a number between <strong className="text-fg">1</strong> and <strong className="text-fg">100</strong>.
       </p>
       {!won && (
         <div className="flex gap-2">
@@ -51,12 +51,12 @@ export default function NumberGuess({ onComplete }: { onComplete: () => void }) 
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && submit()}
-            className="w-28 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 outline-none focus:border-green-500"
+            className="field w-28"
             placeholder="1–100"
           />
           <button
             onClick={submit}
-            className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="btn"
           >
             Guess
           </button>
@@ -67,8 +67,8 @@ export default function NumberGuess({ onComplete }: { onComplete: () => void }) 
           <li key={i} className={[
             'flex items-center gap-3 text-sm rounded-md px-3 py-1.5',
             g.hint === ''
-              ? 'bg-[var(--game-correct-bg)] text-green-700 dark:text-green-400 font-medium'
-              : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
+              ? 'bg-ok-soft text-accent font-medium'
+              : 'bg-sunken text-muted',
           ].join(' ')}>
             <span className="font-mono font-bold w-8 text-right">{g.value}</span>
             <span>{g.hint === '' ? '✓ Correct!' : g.hint}</span>

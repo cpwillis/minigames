@@ -100,26 +100,26 @@ export default function GitScenario({ onComplete }: { onComplete: () => void }) 
 
   return (
     <div className="space-y-5 max-w-lg">
-      <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+      <div className="flex items-center justify-between text-sm text-muted">
         <span>Round {round + 1} / {TOTAL_ROUNDS}</span>
         <span>{correct} correct</span>
       </div>
 
-      <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-4">
-        <p className="text-sm text-gray-900 dark:text-gray-100 leading-relaxed">{q.scenario}</p>
+      <div className="rounded-lg border border-line bg-sunken p-4">
+        <p className="text-sm text-fg leading-relaxed">{q.scenario}</p>
       </div>
 
       <div className="space-y-2">
         {q.options.map((opt, i) => {
           let cls = 'w-full text-left rounded-lg border px-3 py-2.5 font-mono text-sm transition-colors'
           if (selected === null) {
-            cls += ' border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 hover:border-green-500 cursor-pointer'
+            cls += ' border-line bg-surface text-fg hover:border-accent cursor-pointer'
           } else if (i === q.answer) {
-            cls += ' border-green-500 bg-[var(--game-correct-bg)] text-green-700 dark:text-green-400'
+            cls += ' border-accent bg-ok-soft text-accent'
           } else if (i === selected) {
-            cls += ' border-red-400 bg-[var(--game-wrong-bg)] text-red-600 dark:text-red-400'
+            cls += ' border-bad bg-bad-soft text-bad'
           } else {
-            cls += ' border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-400 dark:text-gray-600'
+            cls += ' border-line bg-surface text-faint'
           }
           return (
             <button key={i} className={cls} onClick={() => pick(i)} disabled={selected !== null}>

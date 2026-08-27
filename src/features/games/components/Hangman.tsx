@@ -57,7 +57,7 @@ export default function Hangman({ onComplete }: { onComplete: () => void }) {
     <div className="space-y-5 max-w-md">
       <div className="flex items-center justify-between">
         <p className="text-4xl">{GALLOWS[wrongCount]}</p>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-muted">
           {MAX_WRONG - wrongCount} guesses left
         </p>
       </div>
@@ -66,7 +66,7 @@ export default function Hangman({ onComplete }: { onComplete: () => void }) {
         {revealed.map((l, i) => (
           <span
             key={i}
-            className="w-8 h-10 border-b-2 border-gray-400 dark:border-gray-500 flex items-end justify-center pb-1 font-mono text-lg font-bold text-gray-900 dark:text-gray-100"
+            className="w-8 h-10 border-b-2 border-line-strong flex items-end justify-center pb-1 font-mono text-lg font-bold text-fg"
           >
             {l !== '_' ? l : ''}
           </span>
@@ -74,17 +74,17 @@ export default function Hangman({ onComplete }: { onComplete: () => void }) {
       </div>
 
       {wrong.length > 0 && (
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-muted">
           Wrong: {wrong.map(l => (
-            <span key={l} className="font-mono text-red-500 mr-1">{l}</span>
+            <span key={l} className="font-mono text-bad mr-1">{l}</span>
           ))}
         </p>
       )}
 
       {lost ? (
-        <p className="text-red-500 font-medium">The word was: <span className="font-mono">{word.current}</span></p>
+        <p className="text-bad font-medium">The word was: <span className="font-mono">{word.current}</span></p>
       ) : isWon ? (
-        <p className="text-green-600 dark:text-green-400 font-medium">Correct! 🎉</p>
+        <p className="text-accent font-medium">Correct! 🎉</p>
       ) : (
         <div className="flex flex-wrap gap-1.5">
           {'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(l => (
@@ -96,9 +96,9 @@ export default function Hangman({ onComplete }: { onComplete: () => void }) {
                 'w-8 h-8 rounded text-sm font-mono font-medium transition-colors',
                 guessed.has(l)
                   ? word.current.includes(l)
-                    ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 border border-green-300 dark:border-green-700'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 border border-gray-200 dark:border-gray-700'
-                  : 'bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 hover:border-green-500 dark:hover:border-green-500',
+                    ? 'bg-accent-soft text-accent border border-accent'
+                    : 'bg-sunken text-faint border border-line'
+                  : 'bg-surface border border-line text-fg hover:border-accent',
               ].join(' ')}
             >
               {l}

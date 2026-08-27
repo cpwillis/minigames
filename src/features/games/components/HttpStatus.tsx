@@ -68,7 +68,7 @@ export default function HttpStatus({ onComplete }: { onComplete: () => void }) {
   if (done) {
     return (
       <div className="space-y-3 max-w-md">
-        <p className="text-green-600 dark:text-green-400 font-medium">
+        <p className="text-accent font-medium">
           Done! {correct}/{TOTAL_ROUNDS} correct.
         </p>
       </div>
@@ -77,26 +77,26 @@ export default function HttpStatus({ onComplete }: { onComplete: () => void }) {
 
   return (
     <div className="space-y-5 max-w-md">
-      <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+      <div className="flex items-center justify-between text-sm text-muted">
         <span>Round {round + 1} / {TOTAL_ROUNDS}</span>
         <span>{correct} correct</span>
       </div>
 
-      <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-6 text-center">
-        <p className="text-5xl font-mono font-bold text-gray-900 dark:text-gray-100">{card.code}</p>
+      <div className="rounded-lg border border-line bg-sunken p-6 text-center">
+        <p className="text-5xl font-mono font-bold text-fg">{card.code}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
         {card.options.map(opt => {
           let cls = 'rounded-lg border px-3 py-2.5 text-sm text-left transition-colors'
           if (selected === null) {
-            cls += ' border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 hover:border-green-500 dark:hover:border-green-500 cursor-pointer'
+            cls += ' border-line bg-surface text-fg hover:border-accent cursor-pointer'
           } else if (opt === card.answer) {
-            cls += ' border-green-500 bg-[var(--game-correct-bg)] text-green-700 dark:text-green-400'
+            cls += ' border-accent bg-ok-soft text-accent'
           } else if (opt === selected) {
-            cls += ' border-red-400 bg-[var(--game-wrong-bg)] text-red-600 dark:text-red-400'
+            cls += ' border-bad bg-bad-soft text-bad'
           } else {
-            cls += ' border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-400 dark:text-gray-600'
+            cls += ' border-line bg-surface text-faint'
           }
           return (
             <button key={opt} className={cls} onClick={() => pick(opt)} disabled={selected !== null}>

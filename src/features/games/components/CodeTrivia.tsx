@@ -54,7 +54,7 @@ export default function CodeTrivia({ onComplete }: { onComplete: () => void }) {
 
   if (done) {
     return (
-      <div className="text-green-600 dark:text-green-400 text-xl py-8">All correct! 🎉</div>
+      <div className="text-accent text-xl py-8">All correct! 🎉</div>
     )
   }
 
@@ -62,24 +62,24 @@ export default function CodeTrivia({ onComplete }: { onComplete: () => void }) {
 
   return (
     <div className="space-y-4 max-w-lg">
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-sm text-muted">
         Question {current + 1} of {QUESTIONS.length}
       </p>
-      <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-5 space-y-4">
-        <p className="text-base font-medium text-gray-900 dark:text-gray-100">{q.q}</p>
+      <div className="rounded-lg border border-line bg-sunken p-5 space-y-4">
+        <p className="text-base font-medium text-fg">{q.q}</p>
         <div className="flex flex-col gap-2">
           {q.options.map((opt, i) => {
             let cls = 'rounded-lg border px-4 py-2.5 text-sm text-left transition-colors'
             if (selected !== null) {
               if (i === q.answer) {
-                cls += ' border-green-500 text-green-700 dark:text-green-400 bg-[var(--game-correct-bg)]'
+                cls += ' border-accent text-accent bg-ok-soft'
               } else if (i === selected) {
-                cls += ' border-red-500 text-red-600 dark:text-red-400 bg-[var(--game-wrong-bg)]'
+                cls += ' border-bad text-bad bg-bad-soft'
               } else {
-                cls += ' border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                cls += ' border-line bg-sunken text-muted'
               }
             } else {
-              cls += ' border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:border-gray-400 dark:hover:border-gray-500'
+              cls += ' border-line bg-surface text-fg hover:border-line-strong'
             }
             return (
               <button key={i} className={cls} onClick={() => pick(i)}>

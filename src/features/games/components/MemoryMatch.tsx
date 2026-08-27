@@ -69,19 +69,26 @@ export default function MemoryMatch({ onComplete }: { onComplete: () => void }) 
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-gray-500 dark:text-gray-400">Flip cards to find all matching pairs.</p>
-      <div className="card-grid">
+      <p className="text-sm text-muted">Flip cards to find all matching pairs.</p>
+      <div className="mm-grid">
         {cards.map((card, i) => (
-          <div
+          <button
             key={card.id}
-            className={`card${card.flipped || card.matched ? ' face-up' : ''}${card.matched ? ' matched' : ''}`}
+            type="button"
+            className={`mm-card${card.flipped || card.matched ? ' face-up' : ''}${card.matched ? ' matched' : ''}`}
             onClick={() => flip(i)}
+            disabled={card.matched}
+            aria-label={
+              card.matched ? `Matched: ${card.emoji}`
+                : card.flipped ? `Face up: ${card.emoji}`
+                : `Face down card ${i + 1}`
+            }
           >
-            <div className="card-inner">
-              <div className="card-front border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">{card.emoji}</div>
-              <div className="card-back border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 select-none">?</div>
+            <div className="mm-card-inner">
+              <div className="mm-card-front border border-line bg-sunken">{card.emoji}</div>
+              <div className="mm-card-back border border-line bg-sunken text-faint select-none">?</div>
             </div>
-          </div>
+          </button>
         ))}
       </div>
     </div>

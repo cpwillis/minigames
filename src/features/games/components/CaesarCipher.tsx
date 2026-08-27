@@ -31,21 +31,19 @@ export default function CaesarCipher({ onComplete }: { onComplete: () => void })
 
   return (
     <div className="space-y-5 max-w-lg">
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-sm text-muted">
         Decrypt the message below. It was encoded with a Caesar cipher.
       </p>
-      <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 px-5 py-4">
-        <code className="font-mono text-base text-green-600 dark:text-green-400 tracking-wide">
+      <div className="rounded-lg border border-line bg-sunken px-5 py-4">
+        <code className="font-mono text-base text-accent tracking-wide">
           {CIPHER}
         </code>
       </div>
       <div className="flex gap-3">
         <input
           className={[
-            'flex-1 rounded-lg border px-3 py-2 text-sm outline-none transition-colors bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100',
-            status === 'wrong'
-              ? 'border-red-500 animate-[shake_0.4s_ease]'
-              : 'border-gray-200 dark:border-gray-700 focus:border-green-500 dark:focus:border-green-500',
+            'field flex-1',
+            status === 'wrong' ? 'border-bad animate-[shake_0.4s_ease]' : '',
           ].join(' ')}
           type="text"
           placeholder="Type the decoded message…"
@@ -61,15 +59,15 @@ export default function CaesarCipher({ onComplete }: { onComplete: () => void })
           className={[
             'rounded-lg border px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap',
             status === 'correct'
-              ? 'border-green-500 text-green-600 dark:text-green-400'
-              : 'border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100',
+              ? 'border-accent text-accent'
+              : 'border-line bg-sunken hover:bg-line/40 text-fg',
           ].join(' ')}
         >
           {status === 'correct' ? '✓ Correct' : 'Decrypt'}
         </button>
       </div>
       {status === 'wrong' && (
-        <p className="text-sm text-red-500">Incorrect. Try again.</p>
+        <p className="text-sm text-bad">Incorrect. Try again.</p>
       )}
     </div>
   )
