@@ -2,7 +2,7 @@
 import { useState } from 'react'
 
 export const meta = {
-  id: 'bug-finder',
+  id: 'bug-finder' as const,
   title: 'Bug Finder',
   description: 'Click the line containing the bug in each code snippet.',
   icon: '🐞',

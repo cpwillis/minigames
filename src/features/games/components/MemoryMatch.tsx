@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import './MemoryMatch.css'
 
 export const meta = {
-  id: 'memory-match',
+  id: 'memory-match' as const,
   title: 'Memory Match',
   description: 'Flip cards to find all matching emoji pairs.',
   icon: '🃏',

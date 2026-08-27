@@ -2,7 +2,7 @@
 import { useState } from 'react'
 
 export const meta = {
-  id: 'code-trivia',
+  id: 'code-trivia' as const,
   title: 'Code Trivia',
   description: 'Test your developer knowledge with trivia questions.',
   icon: '🧠',

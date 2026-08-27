@@ -2,7 +2,7 @@
 import { useState } from 'react'
 
 export const meta = {
-  id: 'regex-match',
+  id: 'regex-match' as const,
   title: 'Regex Match',
   description: 'Select all strings that match the given regex pattern.',
   icon: '🔤',

@@ -2,7 +2,7 @@
 import { useState } from 'react'
 
 export const meta = {
-  id: 'http-status',
+  id: 'http-status' as const,
   title: 'HTTP Status',
   description: 'Match the status code to its meaning.',
   icon: '🌐',

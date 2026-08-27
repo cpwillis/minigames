@@ -2,7 +2,7 @@
 import { useState } from 'react'
 
 export const meta = {
-  id: 'caesar-cipher',
+  id: 'caesar-cipher' as const,
   title: 'Caesar Cipher',
   description: 'Decrypt the encoded message by cracking the cipher.',
   icon: '🔐',

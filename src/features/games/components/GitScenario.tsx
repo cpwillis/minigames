@@ -2,7 +2,7 @@
 import { useState } from 'react'
 
 export const meta = {
-  id: 'git-scenario',
+  id: 'git-scenario' as const,
   title: 'Git Scenario',
   description: 'Pick the correct git command for each situation.',
   icon: '🌿',

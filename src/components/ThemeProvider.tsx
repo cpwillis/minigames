@@ -7,10 +7,9 @@ type Resolved = 'light' | 'dark'
 interface ThemeCtx {
   theme: Theme
   setTheme: (t: Theme) => void
-  resolvedTheme: Resolved
 }
 
-const Ctx = createContext<ThemeCtx>({ theme: 'system', setTheme: () => {}, resolvedTheme: 'light' })
+const Ctx = createContext<ThemeCtx>({ theme: 'system', setTheme: () => {} })
 
 export const useTheme = () => useContext(Ctx)
 
@@ -26,25 +25,18 @@ function applyClass(r: Resolved) {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('system')
-  const [resolved, setResolved] = useState<Resolved>('light')
 
   useEffect(() => {
     let saved: Theme = 'system'
     try { saved = (localStorage.getItem('theme') as Theme) || 'system' } catch {}
     setThemeState(saved)
-    const r = resolve(saved)
-    applyClass(r)
-    setResolved(r)
+    applyClass(resolve(saved))
 
     const mq = window.matchMedia('(prefers-color-scheme: dark)')
     const listener = () => {
       let current: Theme = 'system'
       try { current = (localStorage.getItem('theme') as Theme) || 'system' } catch {}
-      if (current === 'system') {
-        const r2 = resolve('system')
-        applyClass(r2)
-        setResolved(r2)
-      }
+      if (current === 'system') applyClass(resolve('system'))
     }
     mq.addEventListener('change', listener)
     return () => mq.removeEventListener('change', listener)
@@ -53,12 +45,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const setTheme = useCallback((t: Theme) => {
     setThemeState(t)
     try { localStorage.setItem('theme', t) } catch {}
-    const r = resolve(t)
-    applyClass(r)
-    setResolved(r)
+    applyClass(resolve(t))
   }, [])
 
-  return <Ctx.Provider value={{ theme, setTheme, resolvedTheme: resolved }}>{children}</Ctx.Provider>
+  return <Ctx.Provider value={{ theme, setTheme }}>{children}</Ctx.Provider>
 }
 
 export const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('theme')||'system';var r=t==='system'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):t;document.documentElement.classList.add(r)}catch(e){}})()`

@@ -2,7 +2,7 @@
 import { useState } from 'react'
 
 export const meta = {
-  id: 'json-fix',
+  id: 'json-fix' as const,
   title: 'JSON Fix',
   description: 'Spot the syntax error in each JSON blob.',
   icon: '{}',

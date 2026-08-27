@@ -3,7 +3,7 @@ import { useState, useMemo, useCallback } from 'react'
 import './WordSearch.css'
 
 export const meta = {
-  id: 'word-search',
+  id: 'word-search' as const,
   title: 'Word Search',
   description: 'Find all the hidden dev terms in the grid.',
   icon: '🔍',

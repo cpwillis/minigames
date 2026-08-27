@@ -1,5 +1,7 @@
+import type { GameId } from './game-ids'
+
 export interface GameMeta {
-  id: string
+  id: GameId
   title: string
   description: string
   icon: string

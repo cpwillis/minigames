@@ -1,11 +1,7 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 import { api } from '@/lib/api'
-
-export interface GameRecord {
-  bestTime: number
-  bestPoints: number
-}
+import type { GameRecord } from '@/features/games/types'
 
 const KEY = 'minigames-progress'
 
@@ -43,7 +39,6 @@ export function useProgress() {
   }, [])
 
   const totalPoints = Object.values(progress).reduce((s, r) => s + r.bestPoints, 0)
-  const completedCount = Object.keys(progress).length
 
-  return { progress, submitResult, resetProgress, totalPoints, completedCount }
+  return { progress, submitResult, resetProgress, totalPoints }
 }

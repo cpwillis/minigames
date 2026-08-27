@@ -2,7 +2,7 @@
 import { useState } from 'react'
 
 export const meta = {
-  id: 'color-hex',
+  id: 'color-hex' as const,
   title: 'Color Hex',
   description: 'Pick the color swatch matching the hex code.',
   icon: '🎨',

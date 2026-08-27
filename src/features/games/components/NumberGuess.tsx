@@ -2,7 +2,7 @@
 import { useState, useRef } from 'react'
 
 export const meta = {
-  id: 'number-guess',
+  id: 'number-guess' as const,
   title: 'Number Guess',
   description: 'Guess the secret number between 1 and 100.',
   icon: '🎲',

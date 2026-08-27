@@ -2,7 +2,7 @@
 import { useState } from 'react'
 
 export const meta = {
-  id: 'riddle-box',
+  id: 'riddle-box' as const,
   title: 'Riddle Box',
   description: 'Solve the developer-themed riddle with the right emoji.',
   icon: '🎭',

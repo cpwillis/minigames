@@ -2,7 +2,7 @@
 import { useState } from 'react'
 
 export const meta = {
-  id: 'big-o',
+  id: 'big-o' as const,
   title: 'Big-O',
   description: 'Identify the time complexity of each code snippet.',
   icon: '📈',

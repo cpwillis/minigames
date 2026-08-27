@@ -7,12 +7,6 @@ export interface LeaderboardEntry {
   total_points: number
 }
 
-export interface UserScore {
-  game_id: string
-  best_time: number
-  points: number
-}
-
 // HTTP error (server responded non-2xx). Network/DNS failures throw plain TypeError from fetch.
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
@@ -51,9 +45,4 @@ export const api = {
     request('/scores', json('POST', { user_id: userId, game_id: gameId, best_time: bestTime, points })),
 
   getLeaderboard: () => request<LeaderboardEntry[]>('/scores/leaderboard'),
-
-  getLeaderboardForGame: (gameId: string) =>
-    request<LeaderboardEntry[]>(`/scores/leaderboard/${gameId}`),
-
-  getUserScores: (uuid: string) => request<UserScore[]>(`/scores/user/${uuid}`),
 }

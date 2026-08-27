@@ -13,6 +13,7 @@ import ColorHex, { meta as chMeta } from './components/ColorHex'
 import JsonFix, { meta as jfMeta } from './components/JsonFix'
 import GitScenario, { meta as gsMeta } from './components/GitScenario'
 import BigO, { meta as boMeta } from './components/BigO'
+import { GAME_IDS } from './game-ids'
 import type { GameMeta } from './types'
 
 export const GAMES: GameMeta[] = [
@@ -32,3 +33,6 @@ export const GAMES: GameMeta[] = [
   { ...gsMeta, component: GitScenario },
   { ...boMeta, component: BigO },
 ].sort((a, b) => (a.order ?? 99) - (b.order ?? 99))
+
+// Catches the other drift direction: an id in GAME_IDS with no game behind it (fails the build).
+if (GAMES.length !== GAME_IDS.length) throw new Error("registry.ts and game-ids.ts disagree on the game list")

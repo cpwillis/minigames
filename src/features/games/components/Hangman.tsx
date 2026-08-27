@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 
 export const meta = {
-  id: 'hangman',
+  id: 'hangman' as const,
   title: 'Hangman',
   description: 'Guess the hidden tech term letter by letter.',
   icon: '🪝',

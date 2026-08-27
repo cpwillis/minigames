@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from 'react'
 
 export const meta = {
-  id: 'typing-speed',
+  id: 'typing-speed' as const,
   title: 'Typing Speed',
   description: 'Type the code snippet exactly as shown.',
   icon: '⌨️',
