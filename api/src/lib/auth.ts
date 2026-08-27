@@ -1,35 +1,15 @@
 import type { Context } from 'hono'
+import { isSecret, hashSecret, timingSafeEqual } from './secret'
 
-// Per-user bearer secret.
+// Request-level auth.
 //
 // Before this, the user's id WAS the credential, and GET /scores/leaderboard returned every
 // user's id in plain JSON. Anyone could read an id off the leaderboard and rename that player or
 // submit scores as them. The id is now just an identifier; the secret is what proves you hold it.
-//
-// The client generates the secret, keeps it in localStorage and never displays it. Only its
-// SHA-256 reaches the server, so a database dump does not yield working credentials.
 
 export type Env = { DB: D1Database }
 
-/** Base64url, 43 chars, as produced by the client's 32 random bytes. */
-const SECRET_RE = /^[A-Za-z0-9_-]{43}$/
-
-export function isSecret(value: unknown): value is string {
-  return typeof value === 'string' && SECRET_RE.test(value)
-}
-
-export async function hashSecret(secret: string): Promise<string> {
-  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(secret))
-  return [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, '0')).join('')
-}
-
-/** Length-independent compare so a mismatch tells an attacker nothing from timing alone. */
-function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false
-  let diff = 0
-  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i)
-  return diff === 0
-}
+export { isSecret, hashSecret }
 
 export function bearer(c: Context): string | null {
   const header = c.req.header('authorization') ?? ''

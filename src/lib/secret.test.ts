@@ -3,7 +3,7 @@
 // against `wrangler dev`; these are the pure parts worth pinning down cheaply.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { isSecret, hashSecret } from '../../api/src/lib/auth.ts'
+import { isSecret, hashSecret, timingSafeEqual } from '../../api/src/lib/secret.ts'
 
 test('isSecret accepts exactly the shape the client generates', () => {
   const real = Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString('base64url')
@@ -33,6 +33,13 @@ test('hashSecret is SHA-256 hex and does not leak the secret', async () => {
   const hash = await hashSecret(secret)
   assert.match(hash, /^[0-9a-f]{64}$/)
   assert.ok(!hash.includes(secret))
+})
+
+test('timingSafeEqual matches only identical strings', () => {
+  assert.equal(timingSafeEqual('abc', 'abc'), true)
+  assert.equal(timingSafeEqual('abc', 'abd'), false)
+  assert.equal(timingSafeEqual('abc', 'abcd'), false)
+  assert.equal(timingSafeEqual('', ''), true)
 })
 
 test('different secrets hash differently, same secret hashes stably', async () => {
