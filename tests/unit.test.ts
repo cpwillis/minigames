@@ -2,10 +2,10 @@
 // Covers the logic that silently produces wrong numbers or lets bad input through.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { calcPoints } from './scoring.ts'
-import { formatTime } from './utils.ts'
-import { validateUsername } from '../../shared/username.ts'
-import { containsProfanity } from '../../shared/profanity.ts'
+import { calcPoints } from '../src/lib/scoring.ts'
+import { formatTime } from '../src/lib/utils.ts'
+import { validateUsername } from '../shared/username.ts'
+import { containsProfanity } from '../shared/profanity.ts'
 
 test('points decay with time and never fall below the 10% floor', () => {
   assert.equal(calcPoints(1000, 0), 1000)

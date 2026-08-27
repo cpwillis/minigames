@@ -13,7 +13,7 @@ import ColorHex, { meta as chMeta } from './components/ColorHex'
 import JsonFix, { meta as jfMeta } from './components/JsonFix'
 import GitScenario, { meta as gsMeta } from './components/GitScenario'
 import BigO, { meta as boMeta } from './components/BigO'
-import { GAME_IDS } from './game-ids'
+import { GAME_IDS } from '@shared/game-ids.ts'
 import type { GameMeta } from './types'
 
 export const GAMES: GameMeta[] = [

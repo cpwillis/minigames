@@ -1,0 +1,79 @@
+# Manual only. The suite is meant to be run locally (`npm test`); this exists for when you want
+# a clean-machine check, or to prove a branch passes without pulling it down.
+#
+# Nothing here needs a Cloudflare account or any secret: the worker runs in wrangler's local
+# mode against a throwaway SQLite database under tests/.tmp.
+name: Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: Which layer to run
+        type: choice
+        default: all
+        options: [all, types, unit, migrations, api]
+      ref:
+        description: Branch, tag or SHA (defaults to the branch you dispatch from)
+        type: string
+        required: false
+
+concurrency:
+  group: tests-${{ github.event.inputs.ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Wrangler is chatty and phones home otherwise; both are noise in a log.
+      WRANGLER_SEND_METRICS: 'false'
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref }}
+
+      # The tests import .ts directly and rely on native type stripping, so the Node major
+      # matters. Keep this in step with the engines field in package.json.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            api/package-lock.json
+
+      - name: Install (frontend)
+        run: npm ci
+
+      - name: Install (worker)
+        run: npm ci
+        working-directory: api
+
+      - name: Typecheck
+        if: inputs.suite == 'all' || inputs.suite == 'types'
+        run: npm run test:types
+
+      - name: Unit and contract tests
+        if: inputs.suite == 'all' || inputs.suite == 'unit'
+        run: npm run test:unit
+
+      - name: Migration tests
+        if: inputs.suite == 'all' || inputs.suite == 'migrations'
+        run: npm run test:migrations
+
+      - name: API integration tests
+        if: inputs.suite == 'all' || inputs.suite == 'api'
+        run: npm run test:api
+
+      # A green suite against a build that does not compile would be a false pass.
+      - name: Production build
+        if: inputs.suite == 'all'
+        run: npm run build
+
+      - name: Wrangler bundle check
+        if: inputs.suite == 'all'
+        run: npx wrangler deploy --dry-run --outdir /tmp/bundle
+        working-directory: api

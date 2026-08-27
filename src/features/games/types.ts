@@ -1,4 +1,4 @@
-import type { GameId } from './game-ids'
+import type { GameId } from '@shared/game-ids.ts'
 
 export interface GameMeta {
   id: GameId

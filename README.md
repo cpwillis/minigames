@@ -39,11 +39,16 @@ cp .env.example .env.local # points NEXT_PUBLIC_API_URL at localhost:8787
 npm run dev                # app on http://localhost:3000
 ```
 
-Tests are `node --test` over `src/**/*.test.ts` — no framework, no config:
+Tests are `node --test`, no framework and no test dependencies:
 
 ```bash
-npm test
+npm test              # types, unit, contract, migrations, API integration
+npm run test:unit     # sub-second, no wrangler: the loop to use while editing
 ```
+
+The API and migration layers start a real worker against a throwaway local D1 under `tests/.tmp`,
+so they never touch your dev database. See [tests/README.md](tests/README.md). There is also a
+manual-only GitHub Actions workflow (Actions → Tests → Run workflow) for a clean-machine check.
 
 Games are fully playable without the API. Progress is stored in localStorage; the worker only backs the shared leaderboard and display names.
 

@@ -1,4 +1,4 @@
-import { GAME_IDS } from '@/features/games/game-ids'
+import { GAME_IDS } from '@shared/game-ids.ts'
 import GameClient from './GameClient'
 
 export const dynamicParams = false

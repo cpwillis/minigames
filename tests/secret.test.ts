@@ -3,7 +3,7 @@
 // against `wrangler dev`; these are the pure parts worth pinning down cheaply.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { isSecret, hashSecret, timingSafeEqual } from '../../api/src/lib/secret.ts'
+import { isSecret, hashSecret, timingSafeEqual } from '../api/src/lib/secret.ts'
 
 test('isSecret accepts exactly the shape the client generates', () => {
   const real = Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString('base64url')

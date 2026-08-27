@@ -37,10 +37,12 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "shared/**/*.ts"
+    "shared/**/*.ts",
+    "tests/**/*.ts"
   ],
   "exclude": [
     "node_modules",
-    "api"
+    "api",
+    "tests/.tmp"
   ]
 }

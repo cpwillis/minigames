@@ -48,8 +48,14 @@ export default function YourGame({ onComplete }: { onComplete: () => void }) {
 
 4. Add your game URL to `public/sitemap.xml`.
 
-5. Run `npm run build` and `npm test`. Mismatches between the registry and `game-ids.ts` fail the
-   build in both directions.
+5. Run `npm test`. The contract tests check the points tier, unique ids and orders, registry
+   wiring and sitemap coverage, so a half-finished addition fails there rather than in review.
+
+## Tests
+
+`npm test` runs everything; `npm run test:unit` is the sub-second loop to use while editing.
+See [tests/README.md](../tests/README.md). There is a manual GitHub Actions workflow if you want
+a clean-machine run.
 
 ## Database changes
 
