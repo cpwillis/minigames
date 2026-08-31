@@ -15,13 +15,13 @@ export default function HomePage() {
           <h1 className="text-3xl font-semibold tracking-tight text-fg">
             Fifteen small games for developers.
           </h1>
-          <p className="max-w-xl text-sm leading-relaxed text-muted">
+          <p className="text-sm leading-relaxed text-muted">
             Complexity, regex, git, HTTP, typing and a few for fun. Finish fast for more points.
             No account needed, nothing tracked.
           </p>
         </div>
 
-        <div className="card max-w-xs space-y-2 p-4">
+        <div className="card space-y-2 p-4">
           <div className="flex items-baseline justify-between text-xs">
             <span className="text-muted">Your progress</span>
             <span className="tabular-nums text-fg">
