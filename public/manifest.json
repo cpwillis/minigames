@@ -1,7 +1,7 @@
 {
   "name": "minigames",
   "short_name": "minigames",
-  "description": "Fifteen browser games for developers. Free, no account, no tracking.",
+  "description": "Fifteen browser games for developers. Free, no account, no cookies.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#08090b",

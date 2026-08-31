@@ -145,7 +145,7 @@ describe('privacy claims match what the site actually loads', () => {
   const ANALYTICS_HOSTS = ['cloudflareinsights.com', 'google-analytics.com', 'googletagmanager.com', 'plausible.io', 'umami']
   const loadsAnalytics = ANALYTICS_HOSTS.some(h => headers.includes(h))
 
-  const COPY = ['src/app/page.tsx', 'src/app/layout.tsx', 'src/app/settings/page.tsx', 'README.md']
+  const COPY = ['src/app/page.tsx', 'src/app/layout.tsx', 'src/app/settings/page.tsx', 'README.md', 'public/manifest.json']
   const DENIALS = [/no analytics/i, /nothing tracked/i, /no tracking/i, /no third-party scripts/i]
 
   test('the copy does not deny analytics while the CSP allows it', () => {
