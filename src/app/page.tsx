@@ -17,7 +17,7 @@ export default function HomePage() {
           </h1>
           <p className="text-sm leading-relaxed text-muted">
             Complexity, regex, git, HTTP, typing and a few for fun. Finish fast for more points.
-            No account needed, nothing tracked.
+            No account needed, no cookies.
           </p>
         </div>
 

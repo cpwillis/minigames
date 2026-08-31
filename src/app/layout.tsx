@@ -9,7 +9,7 @@ const GITHUB_URL = process.env.NEXT_PUBLIC_GITHUB_URL ?? 'https://github.com/cpw
 const COPYRIGHT_YEAR = 2026
 
 const DESCRIPTION =
-  'Fifteen browser games for developers: complexity, regex, git, HTTP, typing and more. Free, no account, no tracking.'
+  'Fifteen browser games for developers: complexity, regex, git, HTTP, typing and more. Free, no account, no cookies.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

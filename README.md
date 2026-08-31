@@ -119,8 +119,10 @@ One-off manual deploy instead: `cd api && npm run deploy`.
 - All DB access uses bound parameters (no string-built SQL).
 - CORS is locked to the production origin and `localhost:3000`; the worker never returns stack traces (`app.onError`).
 - `public/_headers` sets CSP, `X-Frame-Options`, `nosniff`, and referrer policy on the static site; display names render through React escaping, so stored XSS is blocked twice (charset whitelist + escaping).
-- No cookies, no analytics and no third-party scripts are served. Progress and the theme live in
-  `localStorage`; only a random id, a chosen display name and per-game times/points reach the server.
+- No cookies and no advertising. The only third-party script is Cloudflare Web Analytics, which is
+  cookieless, stores nothing in the browser and does not fingerprint visitors; its beacon host is
+  allowlisted in `public/_headers`. Progress and the theme live in `localStorage`; only a random id,
+  a chosen display name and per-game times/points reach the server.
 - Scores are still computed in the browser, so a determined player can submit a score they did not
   earn for **their own** account. They can no longer touch anyone else's. Treat the leaderboard as
   decorative.

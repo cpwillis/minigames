@@ -132,8 +132,10 @@ export default function SettingsPage() {
 
       <Section title="Data">
         <p className="text-sm leading-relaxed text-muted">
-          No cookies, no analytics, no tracking. If you saved a display name, it is stored on the
-          server alongside your times, points and a record of each run, and nothing else.{' '}
+          No cookies and no advertising. Page views are counted by Cloudflare Web Analytics, which
+          is cookieless and does not fingerprint you or follow you to other sites. If you saved a
+          display name, it is stored on the server alongside your times, points and a record of each
+          run, and nothing else.{' '}
           <a
             href="https://cpwillis.dev/privacy"
             className="underline underline-offset-2 hover:text-fg"

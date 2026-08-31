@@ -137,6 +137,37 @@ describe('game registry', () => {
   })
 })
 
+// A privacy claim and the CSP are edited in different files, months apart, and nothing connects
+// them. This is the guard: if the site loads an analytics beacon, it may not also tell visitors
+// it does not. Adding analytics without correcting the copy fails here.
+describe('privacy claims match what the site actually loads', () => {
+  const headers = readFileSync('public/_headers', 'utf8')
+  const ANALYTICS_HOSTS = ['cloudflareinsights.com', 'google-analytics.com', 'googletagmanager.com', 'plausible.io', 'umami']
+  const loadsAnalytics = ANALYTICS_HOSTS.some(h => headers.includes(h))
+
+  const COPY = ['src/app/page.tsx', 'src/app/layout.tsx', 'src/app/settings/page.tsx', 'README.md']
+  const DENIALS = [/no analytics/i, /nothing tracked/i, /no tracking/i, /no third-party scripts/i]
+
+  test('the copy does not deny analytics while the CSP allows it', () => {
+    if (!loadsAnalytics) return
+    for (const file of COPY) {
+      const text = readFileSync(file, 'utf8')
+      for (const denial of DENIALS) {
+        assert.ok(!denial.test(text),
+          `${file} claims ${denial} but public/_headers allows an analytics beacon`)
+      }
+    }
+  })
+
+  test('the beacon host is allowed by host, not by exact path', () => {
+    if (!headers.includes('cloudflareinsights.com')) return
+    // The real script URL carries a version suffix after beacon.min.js, so a path-exact source
+    // silently fails to match and the beacon stays blocked.
+    assert.ok(!/static\.cloudflareinsights\.com\/beacon\.min\.js(?![\w.])/.test(headers),
+      'allowlist static.cloudflareinsights.com as a host; the versioned path will not match')
+  })
+})
+
 describe('sitemap', () => {
   test('lists every game', () => {
     for (const id of GAME_IDS) {
