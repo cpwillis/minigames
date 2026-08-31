@@ -18,13 +18,13 @@ export const metadata: Metadata = {
   keywords: ['developer games', 'coding games', 'programming trivia', 'cs games', 'browser games'],
   authors: [{ name: 'cpwillis', url: 'https://cpwillis.dev' }],
   creator: 'cpwillis',
-  alternates: { canonical: '/' },
+  alternates: { canonical: './' },   // './' is per-route; '/' made every page canonicalise to the home page
   openGraph: {
     type: 'website',
     siteName: 'minigames',
     title: 'minigames',
     description: DESCRIPTION,
-    url: SITE_URL,
+    url: './',
     images: [{ url: '/og.png', width: 1200, height: 630, alt: 'minigames' }],
   },
   twitter: {
