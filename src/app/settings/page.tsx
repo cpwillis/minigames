@@ -1,6 +1,5 @@
 'use client'
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
 import { useTheme } from '@/components/ThemeProvider'
 import { useUser } from '@/hooks/useUser'
 import { useProgress } from '@/hooks/useProgress'
@@ -135,9 +134,12 @@ export default function SettingsPage() {
         <p className="text-sm leading-relaxed text-muted">
           No cookies, no analytics, no tracking. If you saved a display name, it is stored on the
           server alongside your times, points and a record of each run, and nothing else.{' '}
-          <Link href="/legal" className="underline underline-offset-2 hover:text-fg">
-            Terms &amp; Privacy
-          </Link>
+          <a
+            href="https://cpwillis.dev/privacy"
+            className="underline underline-offset-2 hover:text-fg"
+          >
+            Privacy
+          </a>
           .
         </p>
       </Section>
