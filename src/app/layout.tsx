@@ -64,8 +64,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Flash-free theme: sets the class before first paint */}
-        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        {/* Flash-free theme: sets the class before first paint. data-cfasync opts out of
+            Rocket Loader, which is on for this host and would otherwise defer the one
+            script whose entire purpose is to run before paint. */}
+        <script data-cfasync="false" dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body suppressHydrationWarning>
         <script
