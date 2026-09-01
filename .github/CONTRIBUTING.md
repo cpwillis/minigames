@@ -1,19 +1,9 @@
 # Contributing
 
-This project has **no support and no maintenance commitment**. Issues and pull requests may be
-read, ignored, or closed without reply, and the whole thing can be taken offline at any time
-without notice. Contribute only if you are happy on those terms. See
-[/legal](https://minigames.cpwillis.dev/legal).
+No support and no maintenance commitment: issues and pull requests may be read, ignored, or closed
+without reply, and the site can go offline at any time. Contribute only on those terms.
 
-## Running locally
-
-```bash
-npm install
-cp .env.example .env.local   # fill in values
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000). The API is optional for local play — progress is stored in localStorage.
+Setup, tests and deployment: [README](../README.md).
 
 ## Adding a game
 
@@ -23,70 +13,43 @@ Open [http://localhost:3000](http://localhost:3000). The API is optional for loc
 'use client'
 
 export const meta = {
-  id: 'your-game',           // kebab-case, unique
+  id: 'your-game',                // kebab-case, unique
   title: 'Your Game',
   description: 'One sentence describing the game.',
   icon: '🎮',
   difficulty: 'medium' as const,  // easy | medium | hard
-  maxPoints: 750,            // easy=500, medium=750, hard=1000
-  order: 16,                 // determines grid position
+  maxPoints: 750,                 // easy=500, medium=750, hard=1000
+  order: 16,                      // grid position
 }
 
 export default function YourGame({ onComplete }: { onComplete: () => void }) {
-  // Call onComplete() exactly once when the player wins.
-  // Never call it before the game is actually finished.
-  // Do not manage your own timer — the route wrapper handles it.
+  // Call onComplete() exactly once, and only when the player has actually won.
+  // No timer of your own: the route wrapper owns timing and scoring.
   return <div>...</div>
 }
 ```
 
-2. Add the id to `src/features/games/game-ids.ts` (the single source of truth for ids and static
-   routes) and to the `GAME_IDS` set in `api/src/lib/validate.ts`. The worker rejects scores for
-   unknown ids.
+2. Add the id to `shared/game-ids.ts`. That list types `GameMeta.id`, generates the static route and
+   is what the worker validates scores against, so there is nowhere else to register it.
+3. Import the component and add one entry to `GAMES` in `src/features/games/registry.ts`.
+4. Add the game URL to `public/sitemap.xml`.
+5. `npm test`.
 
-3. Open `src/features/games/registry.ts` and add your import + one entry to the `GAMES` array.
+## Requirements
 
-4. Add your game URL to `public/sitemap.xml`.
+`tests/contract.test.mjs` covers the first four, so a half-finished addition fails there rather than
+in review:
 
-5. Run `npm test`. The contract tests check the points tier, unique ids and orders, registry
-   wiring and sitemap coverage, so a half-finished addition fails there rather than in review.
+- calls `onComplete()`, and runs no clock of its own
+- `maxPoints` matches the difficulty tier (easy=500, medium=750, hard=1000)
+- no network calls from a game component: all data stays client-side
+- semantic colour tokens only (`bg-surface`, `text-muted`, `border-line`, `text-accent` and friends,
+  defined in `src/app/globals.css`). No `dark:` variants, no raw palette colours: the tokens already
+  swap per theme
+- playable from a keyboard: interactive elements are `<button>`, not `<div onClick>`, and every
+  control has an accessible name (`aria-label` where the visible content is only an emoji)
+- no third-party content: no quotes, lyrics, logos, brand marks, images or question banks copied
+  from elsewhere. Write original text, or use plain factual material
+- no new npm dependencies, in game files or anywhere else
 
-## Tests
-
-`npm test` runs everything; `npm run test:unit` is the sub-second loop to use while editing.
-See [tests/README.md](../tests/README.md). There is a manual GitHub Actions workflow if you want
-a clean-machine run.
-
-## Database changes
-
-Schema changes go in `api/migrations/` as a new numbered file. Never edit a migration that has
-already been applied, and rehearse against local D1 (`cd api && npm run db:migrate:local`) with
-representative data before anything touches production. Both new tables and new columns need
-`created_at` and `updated_at`.
-
-## Game requirements
-
-- Must call `onComplete()` exactly once on win, never before
-- Must not make external API calls — all data stays client-side
-- `maxPoints` must match difficulty tier (easy=500, medium=750, hard=1000)
-- Must use the semantic colour tokens (`bg-surface`, `text-muted`, `border-line`, `text-accent`
-  and friends, defined in `src/app/globals.css`). Do not write `dark:` variants or raw palette
-  colours: the tokens already swap per theme.
-- Must be playable from a keyboard: interactive elements are `<button>`, not `<div onClick>`
-- Every control needs an accessible name (`aria-label` where the visible content is only an emoji)
-- Must not embed third-party content: no quotes, lyrics, logos, brand marks, images or question
-  banks copied from elsewhere. Write original text, or use plain factual material.
-- No new npm dependencies, in game files or anywhere else
-
-## Submitting a PR
-
-Fork the repo, create a branch, and open a PR against `main`. The PR template will give you a checklist. Include a short description of what the game does and why it fits the dev theme.
-
-## Reporting bugs
-
-Open an issue using the **Bug report** template. No response is promised: see the note at the
-top of this file.
-
-## Suggesting games
-
-Open an issue using the **Game idea** template.
+Schema changes are migrations: see [Deploying](../README.md#deploying).

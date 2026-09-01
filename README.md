@@ -1,155 +1,130 @@
 # minigames
 
-Browser-based developer mini games. 15 games covering CS concepts, typing, memory, git, regex, and more. Hosted at [minigames.cpwillis.dev](https://minigames.cpwillis.dev).
+15 browser mini games on developer themes: CS concepts, typing, memory, git, regex. Static Next.js
+site plus a Workers API for the shared leaderboard. Live at
+[minigames.cpwillis.dev](https://minigames.cpwillis.dev).
 
-## Status and support
-
-This is an unpaid hobby project. **There is no support**: no help desk, no SLA, no uptime
-commitment, and no undertaking to answer issues or fix anything. It is provided as is, with no
-warranty, and the author accepts no liability for its use. It may be changed, taken offline or
-deleted at any time, without notice, along with every score and display name stored on the server.
-Do not depend on it. Full terms: [minigames.cpwillis.dev/legal](https://minigames.cpwillis.dev/legal)
-(source: `src/app/legal/page.tsx`).
+Unpaid hobby project. No support, no SLA, no uptime commitment. It can be changed, taken offline or
+deleted without notice, along with every score and display name on the server. Do not depend on it.
+Terms: [cpwillis.dev/terms](https://cpwillis.dev/terms).
 
 ## Stack
 
-- **Next.js 15** — App Router, TypeScript, static export (`output: 'export'`)
-- **Tailwind CSS v4** — one semantic token palette in `src/app/globals.css`; components use
-  role names (`bg-surface`, `text-muted`) rather than per-theme colour pairs
-- **Cloudflare Pages** — hosts the static `out/` build
-- **Cloudflare Workers + Hono + D1** — optional API for the shared leaderboard
+Next.js 15 App Router, TypeScript, static export (`output: 'export'`), Tailwind v4. Cloudflare Pages
+serves the `out/` build; Cloudflare Workers + Hono + D1 back the leaderboard. Runtime dependencies
+are `next`, `react`, `react-dom`, and `hono` on the worker. Nothing else, and nothing new: theming,
+dialogs, tabs and the timer are hand-rolled because each is a few lines.
 
-Runtime dependencies: `next`, `react`, `react-dom` on the frontend, `hono` on the worker. Nothing
-else. Theming, dialogs, tabs and the timer are hand-rolled because each is a few lines.
+Colours are one semantic token palette in `src/app/globals.css`; components use role names
+(`bg-surface`, `text-muted`) rather than per-theme colour pairs.
 
 ## Running locally
 
-Local dev mirrors production exactly: the worker runs on `localhost:8787` against a local D1 (SQLite under `api/.wrangler/`), and the frontend on `localhost:3000` talks to it. No Cloudflare account or login needed.
+Node 24+. No Cloudflare account or login. Local dev mirrors production: the worker on `:8787`
+against a local D1 (SQLite under `api/.wrangler/`), the frontend on `:3000` talking to it.
 
 ```bash
-# Terminal 1: API + local D1
+# terminal 1: API + local D1
 cd api
 npm install
 npm run db:migrate:local   # applies api/migrations/*.sql to the local D1
-npm run dev                # worker on http://localhost:8787
+npm run dev                # http://localhost:8787
 
-# Terminal 2: frontend
+# terminal 2: frontend
 npm install
-cp .env.example .env.local # points NEXT_PUBLIC_API_URL at localhost:8787
-npm run dev                # app on http://localhost:3000
+cp .env.example .env.local # already points at the local worker
+npm run dev                # http://localhost:3000
 ```
 
-Tests are `node --test`, no framework and no test dependencies:
+Games are fully playable without the API. Progress lives in localStorage; the worker only backs the
+shared leaderboard and display names.
+
+## Tests
+
+`node --test`, no framework.
 
 ```bash
-npm test              # types, unit, contract, components, migrations, API integration
-npm run test:unit     # sub-second, no wrangler, no DOM: the loop to use while editing
+npm test            # types, unit, contract, components, migrations, API integration
+npm run test:unit   # sub-second, no wrangler, no DOM: the loop to use while editing
 ```
 
-The API and migration layers start a real worker against a throwaway local D1 under `tests/.tmp`,
-so they never touch your dev database. See [tests/README.md](tests/README.md). There is also a
-manual-only GitHub Actions workflow (Actions → Tests → Run workflow) for a clean-machine check.
-
-Games are fully playable without the API. Progress is stored in localStorage; the worker only backs the shared leaderboard and display names.
+Anything touching D1 starts a real worker against a throwaway database under `tests/.tmp`, never
+your dev one. Layers, what each guards, and the manual CI workflow:
+[tests/README.md](tests/README.md).
 
 ## Environment variables
+
+`NEXT_PUBLIC_*` values are baked in at build time, so changing one needs a rebuild.
 
 | Variable | Purpose |
 |---|---|
 | `NEXT_PUBLIC_SITE_URL` | Canonical URL, used in metadata |
 | `NEXT_PUBLIC_API_URL` | Workers API base URL |
-| `NEXT_PUBLIC_GITHUB_URL` | GitHub repo link shown in footer |
+| `NEXT_PUBLIC_GITHUB_URL` | Repo link in the footer |
 
 ## Deploying
 
-### 1. Cloudflare Pages (frontend)
+**Frontend (Pages).** Connect the repo in Cloudflare Pages: build command `npm run build`, output
+directory `out`, the three `NEXT_PUBLIC_*` vars set for Production, custom domain
+`minigames.cpwillis.dev`, preview deployments off (branch controls, main only). Root `wrangler.toml`
+mirrors the dashboard; a Pages config file cannot carry the build command, so that half stays there.
 
-1. Push to GitHub and connect the repo in Cloudflare Pages.
-2. Build settings: command `npm run build`, output directory `out`.
-3. Add env vars (Production): `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_GITHUB_URL`.
-4. Custom domain: `minigames.cpwillis.dev`.
-5. Disable preview deployments: Settings → Builds & deployments → branch controls → main only.
+**Worker (API).** Dashboard → Workers & Pages → Import a repository, root directory `api/`, build
+command `npm install`, deploy command `npx wrangler deploy`. Every push to `main` touching `api/`
+redeploys. One-off instead: `cd api && npm run deploy`. The route in `api/wrangler.toml` sets
+`custom_domain = true`, so Cloudflare creates and manages the DNS record; a plain zone route does
+not, and the API host never resolves.
 
-### 2. Cloudflare D1 (database)
+**Database (D1).**
 
 ```bash
 cd api
-npm install
-npx wrangler login
+npx wrangler@4 login
 npm run db:create          # first time only: prints a database_id for api/wrangler.toml
-npm run db:migrate:remote  # applies any unapplied migrations to the production D1
-npm run db:migrations:list # what is applied and what is pending
+npm run db:migrate:remote  # applies anything unapplied to the production D1
+npm run db:migrations:list # applied vs pending
 ```
 
-Schema changes are migrations in `api/migrations/`, applied with the commands above. **Never edit
-a migration that has been applied**: add a new numbered file. `0001_baseline.sql` is entirely
-`IF NOT EXISTS`, so it is a no-op against the database that predates migrations, and builds a
-fresh one from scratch. Rehearse against local D1 (`npm run db:migrate:local`) before running
-anything against production.
+Schema changes are new numbered files in `api/migrations/`. Never edit a migration that has been
+applied; rehearse with `npm run db:migrate:local` first. New tables and new columns carry
+`created_at` and `updated_at`. `0001_baseline.sql` is entirely `IF NOT EXISTS` because the live
+database predates migrations: a no-op against it, a full build on a fresh one.
 
-### 3. Cloudflare Workers (API, git-automated)
+## Security model
 
-The route in `api/wrangler.toml` uses `custom_domain = true`, so Cloudflare creates and manages the `api.minigames.cpwillis.dev` DNS record on first deploy. No manual CNAME.
-
-Automated deploys via git (Workers Builds):
-
-1. Cloudflare dashboard → Workers & Pages → Create → Workers → Import a repository.
-2. Select this repo, set root directory to `api/`.
-3. Build command: `npm install`, deploy command: `npx wrangler deploy`.
-4. Every push to `main` that touches `api/` redeploys the worker.
-
-One-off manual deploy instead: `cd api && npm run deploy`.
-
-### 4. Google Search Console
-
-1. Add property `https://minigames.cpwillis.dev` (URL prefix method).
-2. Verify via HTML tag — copy the code into `src/app/layout.tsx` metadata: `verification: { google: 'YOUR_CODE' }`.
-3. Submit sitemap: `https://minigames.cpwillis.dev/sitemap.xml`.
-
-## Security
-
-- Every account has a **secret**: 32 random bytes generated in the browser, held in localStorage,
-  never displayed. Renaming, submitting scores and reading your own records require
-  `Authorization: Bearer <secret>`; the server stores only its SHA-256 and compares in constant
-  time. The user id is public and is just an identifier. Rows predating this have `secret_hash`
-  NULL and are claimed by the first caller to present a secret, because their ids were public
-  anyway (see `api/src/lib/auth.ts`).
-- Display-name changes are rate limited to one per hour per account.
-- All input is validated server-side (the client checks are UX only): display names are `[a-zA-Z0-9 ]`, 1 to 20 chars, profanity-filtered via `shared/profanity.ts` against a public word list; user ids must be v4 UUIDs; `game_id` must be in the whitelist in `api/src/lib/validate.ts` (update it when adding a game); points and times are bounds-checked.
-- All DB access uses bound parameters (no string-built SQL).
-- CORS is locked to the production origin and `localhost:3000`; the worker never returns stack traces (`app.onError`).
-- `public/_headers` sets CSP, `X-Frame-Options`, `nosniff`, and referrer policy on the static site; display names render through React escaping, so stored XSS is blocked twice (charset whitelist + escaping).
-- No cookies and no advertising. The only third-party script is Cloudflare Web Analytics, which is
-  cookieless, stores nothing in the browser and does not fingerprint visitors; its beacon host is
-  allowlisted in `public/_headers`. Progress and the theme live in `localStorage`; only a random id,
-  a chosen display name and per-game times/points reach the server.
-- Scores are still computed in the browser, so a determined player can submit a score they did not
-  earn for **their own** account. They can no longer touch anyone else's. Treat the leaderboard as
-  decorative.
-- For volume abuse, add a Cloudflare rate limiting rule on the zone (Security rules → Rate limiting
-  rules). Writes only, so a shared IP cannot lose access to the leaderboard:
+- Each account holds a secret: 32 random bytes generated in the browser, kept in localStorage, never
+  displayed. Renaming, submitting scores and reading your own records require
+  `Authorization: Bearer <secret>`. The server stores only its SHA-256 and compares in constant time.
+  The user id is public and is just an identifier.
+- Rows predating auth have `secret_hash` NULL and are claimed by the first caller to present a secret
+  (`api/src/lib/auth.ts`). Their ids were public anyway, so there was nothing left to protect.
+- Everything is validated server-side; the client checks are UX only. All SQL uses bound parameters.
+  CORS is limited to the production origin and `localhost:3000`, and `app.onError` never returns a
+  stack trace.
+- Display names are `[a-zA-Z0-9 ]`, 1 to 20 chars, profanity-filtered, and changes are limited to one
+  per hour per account.
+- `public/_headers` carries CSP, HSTS, `X-Frame-Options`, nosniff and referrer policy. No cookies, no
+  ads. The only third-party script is Cloudflare Web Analytics, which is cookieless and stores nothing
+  in the browser; a contract test fails if the site copy denies analytics while the CSP allows the
+  beacon.
+- Scores are computed in the browser, so a determined player can still submit a score they did not
+  earn for **their own** account. Not anyone else's. Treat the leaderboard as decorative.
+- Volume abuse is a zone rate limiting rule, writes only, so a shared IP cannot lose read access:
   `(http.host eq "api.minigames.cpwillis.dev" and http.request.method in {"POST" "PUT"})`.
-  The free zone plan allows one rule, IP counting, a 10 second window and Block for 10 seconds.
-  `backfillScores` submits sequentially precisely so this threshold can be set low; keep it that
-  way, or a returning player's re-sync looks like a flood.
+  `backfillScores` submits sequentially precisely so that threshold can be set low; keep it that way,
+  or a returning player's re-sync looks like a flood.
 
 ## Shared code
 
-`shared/` holds what both deployables need: display-name validation and the profanity filter.
-The word list is the English list from
+`shared/` is what both deployables import: `game-ids.ts`, display-name validation, the profanity
+filter. The word list is the English list from
 [LDNOOBW](https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words),
-CC-BY-4.0, © Shutterstock, vendored with its licence and attributed in `shared/NOTICE.md`.
-`shared/profanity-words.ts` is generated: run `node scripts/build-profanity.mjs` after changing
-the list, never edit it by hand.
+CC-BY-4.0, vendored with its licence and attributed in [shared/NOTICE.md](shared/NOTICE.md).
+`shared/profanity-words.ts` is generated: run `node scripts/build-profanity.mjs` after changing the
+list, never edit it by hand.
 
 ## Adding a game
 
-See [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md). `src/features/games/game-ids.ts` is the
-single source of truth for ids: `GameMeta.id` is typed from it, so registering a game without a
-route (or the reverse) fails the build. The worker keeps its own copy in `api/src/lib/validate.ts`
-because it is a separate deployable.
-
-## License
-
-MIT for the code, which carries its own warranty disclaimer. Game text and artwork are original.
-See [/legal](https://minigames.cpwillis.dev/legal) for the terms that apply to using the site.
+[.github/CONTRIBUTING.md](.github/CONTRIBUTING.md). `shared/game-ids.ts` is the one list of ids: it
+types `GameMeta.id`, drives `generateStaticParams`, and is what the worker validates submitted scores
+against, so an id with no game behind it (or the reverse) fails the build.
