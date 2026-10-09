@@ -21,9 +21,11 @@ function resolve(t: Theme): Resolved {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
-function applyClass(r: Resolved) {
-  document.documentElement.classList.remove('light', 'dark')
-  document.documentElement.classList.add(r)
+function applyClass(t: Theme, r: Resolved) {
+  const el = document.documentElement
+  el.classList.remove('light', 'dark')
+  el.classList.add(r)
+  el.dataset.themePref = t
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
@@ -32,7 +34,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const apply = useCallback((t: Theme) => {
     const r = resolve(t)
-    applyClass(r)
+    applyClass(t, r)
     setResolved(r)
   }, [])
 
@@ -63,4 +65,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return <Ctx.Provider value={{ theme, setTheme, resolvedTheme }}>{children}</Ctx.Provider>
 }
 
-export const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('theme')||'system';var r=t==='system'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):t;document.documentElement.classList.add(r)}catch(e){}})()`
+// Runs before first paint. Sets both the resolved side (class) and the raw preference
+// (data-theme-pref), so CSS can mark the right control active without waiting for hydration.
+export const THEME_SCRIPT = `(function(){try{var e=document.documentElement;var t=localStorage.getItem('theme')||'system';var r=t==='system'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):t;e.classList.add(r);e.dataset.themePref=t}catch(e){}})()`

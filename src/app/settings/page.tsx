@@ -108,13 +108,10 @@ export default function SettingsPage() {
           {(['light', 'dark', 'system'] as const).map(t => (
             <button
               key={t}
+              data-theme-option={t}
               onClick={() => setTheme(t)}
               aria-pressed={theme === t}
-              className={`flex-1 rounded-lg border px-3 py-2 text-sm capitalize transition-colors ${
-                theme === t
-                  ? 'border-transparent bg-fg text-bg'
-                  : 'border-line bg-surface text-fg hover:border-line-strong'
-              }`}
+              className="theme-option flex-1 rounded-lg border border-line bg-surface px-3 py-2 text-sm capitalize text-fg transition-colors hover:border-line-strong"
             >
               {t}
             </button>
@@ -131,7 +128,7 @@ export default function SettingsPage() {
       </Section>
 
       <Section title="Data">
-        <p className="max-w-2xl text-sm leading-relaxed text-muted">
+        <p className="text-sm leading-relaxed text-muted">
           No cookies and no advertising. Page views are counted by Cloudflare Web Analytics, which
           is cookieless and does not fingerprint you or follow you to other sites. If you saved a
           display name, it is stored with your times, points and a record of each run in a Cloudflare

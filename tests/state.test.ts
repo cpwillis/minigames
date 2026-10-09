@@ -28,7 +28,7 @@ describe('ThemeProvider and ThemeToggle', () => {
   test('the toggle flips between exactly two states, never landing on system', async () => {
     withProvider()
     const btn = () => screen.getByRole('button')
-    await waitFor(() => assert.match(btn().getAttribute('aria-label') ?? '', /Switch to (light|dark) theme/))
+    await waitFor(() => assert.ok(btn()))
 
     const seen: string[] = []
     for (let i = 0; i < 4; i++) {
@@ -48,12 +48,29 @@ describe('ThemeProvider and ThemeToggle', () => {
     await waitFor(() => assert.ok(document.documentElement.classList.contains('dark')))
   })
 
-  test('the label always describes what the click will do', async () => {
-    localStorage.setItem('theme', 'dark')
+  // The icon and the label are picked by CSS off the pre-paint class, not by React, so the
+  // markup carries both and the stylesheet hides one. Asserting on the rendered name here would
+  // be asserting on the stylesheet, which this suite does not load; the pairing is checked in
+  // the browser instead. What matters structurally is that both halves ship.
+  test('ships both icons and both labels for CSS to choose between', async () => {
     withProvider()
-    await waitFor(() => assert.equal(screen.getByRole('button').getAttribute('aria-label'), 'Switch to light theme'))
-    fireEvent.click(screen.getByRole('button'))
-    assert.equal(screen.getByRole('button').getAttribute('aria-label'), 'Switch to dark theme')
+    const btn = await waitFor(() => screen.getByRole('button'))
+    for (const cls of ['theme-icon-sun', 'theme-icon-moon', 'theme-when-dark', 'theme-when-light']) {
+      assert.ok(btn.querySelector(`.${cls}`), `missing .${cls}`)
+    }
+    assert.ok(btn.textContent?.includes('Switch to light theme'))
+    assert.ok(btn.textContent?.includes('Switch to dark theme'))
+  })
+
+  // Regression: a blank placeholder used to render until mount, so the icon popped in after
+  // hydration. render() flushes effects before assertions, which hides a mount gate entirely,
+  // so this checks the server output: exactly what ships in the prerendered HTML.
+  test('the icon is in the prerendered markup, not gated on mount', async () => {
+    const { renderToStaticMarkup } = await import('react-dom/server')
+    const html = renderToStaticMarkup(h(ThemeProvider, null, h(ThemeToggle, null)))
+    assert.ok(html.includes('theme-icon-sun'), 'sun icon missing from prerendered HTML')
+    assert.ok(html.includes('theme-icon-moon'), 'moon icon missing from prerendered HTML')
+    assert.ok(!/<div[^>]*class="h-7 w-7"[^>]*>\s*<\/div>/.test(html), 'still rendering a placeholder')
   })
 })
 

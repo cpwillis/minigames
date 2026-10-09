@@ -139,3 +139,22 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Pre-paint theme controls.
+   The prerendered HTML cannot know the visitor's preference, so anything driven by React state
+   paints wrong and corrects on hydration. These two controls are styled from the attributes
+   THEME_SCRIPT sets before first paint instead, so there is no flash. */
+
+/* Appearance picker: exactly one option is active, chosen by the stored preference. */
+:root[data-theme-pref='light'] .theme-option[data-theme-option='light'],
+:root[data-theme-pref='dark'] .theme-option[data-theme-option='dark'],
+:root[data-theme-pref='system'] .theme-option[data-theme-option='system'] {
+  border-color: transparent;
+  background: var(--c-fg);
+  color: var(--c-bg);
+}
+
+/* Nav toggle: both icons and both labels ship, the resolved side picks one. */
+.theme-icon-sun, .theme-when-dark { display: none; }
+.dark .theme-icon-sun, .dark .theme-when-dark { display: inline; }
+.dark .theme-icon-moon, .dark .theme-when-light { display: none; }
