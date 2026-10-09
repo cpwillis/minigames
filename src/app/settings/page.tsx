@@ -58,7 +58,7 @@ export default function SettingsPage() {
   const completed = Object.keys(progress).length
 
   return (
-    <div className="max-w-lg space-y-10">
+    <div className="space-y-10">
       <h1 className="text-2xl font-semibold tracking-tight text-fg">Settings</h1>
 
       <Section title="Profile" description="Shown publicly on the leaderboard. Don't use anything personal.">
@@ -66,7 +66,7 @@ export default function SettingsPage() {
           <label htmlFor="display-name" className="block text-xs text-muted">
             Display name
           </label>
-          <div className="flex gap-2">
+          <div className="flex max-w-md gap-2">
             <input
               id="display-name"
               type="text"
@@ -104,7 +104,7 @@ export default function SettingsPage() {
       </Section>
 
       <Section title="Appearance">
-        <div role="group" aria-label="Theme" className="flex gap-2">
+        <div role="group" aria-label="Theme" className="flex max-w-md gap-2">
           {(['light', 'dark', 'system'] as const).map(t => (
             <button
               key={t}
@@ -131,11 +131,13 @@ export default function SettingsPage() {
       </Section>
 
       <Section title="Data">
-        <p className="text-sm leading-relaxed text-muted">
+        <p className="max-w-2xl text-sm leading-relaxed text-muted">
           No cookies and no advertising. Page views are counted by Cloudflare Web Analytics, which
           is cookieless and does not fingerprint you or follow you to other sites. If you saved a
-          display name, it is stored on the server alongside your times, points and a record of each
-          run, and nothing else.{' '}
+          display name, it is stored with your times, points and a record of each run in a Cloudflare
+          D1 database. The site and that database are hosted by Cloudflare, outside Australia, and
+          Cloudflare handles ordinary request data including your IP address under its own policy.
+          Nothing else is kept.{' '}
           <a
             href="https://cpwillis.dev/privacy"
             className="underline underline-offset-2 hover:text-fg"
